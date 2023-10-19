@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, watchEffect } from 'vue'
 import { mdiMonitorCellphone, mdiTableBorder, mdiTableOff, mdiAccount, mdiMail, mdiGithub, mdiCloseOctagonOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
 import TableSampleClients from '@/components/TableSampleClients.vue'
@@ -147,10 +147,20 @@ const getProjectOptions = (field: string) => {
 		}
 	})
 
-	if(options.length === 1) projectFilters[field] = options[0]
-
 	return options;
 }
+
+watchEffect(() => {
+  // Loop through all the fields
+  Object.keys(projectFilters).forEach(field => {
+    // Get the options for each field
+    const options = field === 'contractor' ? getContractorOptions() : getProjectOptions(field)
+    // If there is only one option, assign it to projectFilters
+    if (options.length === 1) {
+      projectFilters[field] = options[0]
+    }
+  })
+})
 
 const selectOptions = [
 	{ id: 1, label: 'Business development' },
