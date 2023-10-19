@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Style from '@/views/StyleView.vue'
 import Home from '@/views/HomeView.vue'
+import Prox from '@/views/Prox.vue'
 
 const routes = [
   {
@@ -20,6 +21,16 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Home
+  },
+  {
+    // Document title tag
+    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
+    meta: {
+      title: 'ProX'
+    },
+    path: '/prox',
+    name: 'prox',
+    component: Prox
   },
   {
     meta: {

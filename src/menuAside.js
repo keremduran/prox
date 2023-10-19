@@ -20,6 +20,11 @@ export default [
     label: 'Dashboard'
   },
   {
+    to: '/prox',
+    label: 'ProX',
+    icon: mdiTable
+  },
+  {
     to: '/tables',
     label: 'Tables',
     icon: mdiTable

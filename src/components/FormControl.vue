@@ -59,10 +59,15 @@ const computedValue = computed({
   }
 })
 
+const selectedOption = computed(() => {
+  return options.length === 1 ? options[0] : null
+})
+
 const inputElClass = computed(() => {
   const base = [
     'px-3 py-2 max-w-full focus:ring focus:outline-none border-gray-700 rounded w-full',
     'dark:placeholder-gray-400',
+    'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none',
     computedType.value === 'textarea' ? 'h-24' : 'h-12',
     props.borderless ? 'border-0' : 'border',
     props.transparent ? 'bg-transparent' : 'bg-white dark:bg-slate-800'
@@ -131,8 +136,14 @@ if (props.ctrlKFocus) {
       v-model="computedValue"
       :name="name"
       :class="inputElClass"
+      :disabled="options.length === 0"
+      :required="options.length !== 0"
     >
-      <option v-for="option in options" :key="option.id ?? option" :value="option">
+      <option 
+        v-for="option in options" 
+        :key="option.id ?? option" 
+        :value="option"
+        >
         {{ option.label ?? option }}
       </option>
     </select>

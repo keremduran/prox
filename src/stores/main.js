@@ -18,6 +18,8 @@ export const useMainStore = defineStore('main', () => {
 
   const clients = ref([])
   const history = ref([])
+  const items = ref([])
+  const projects = ref([])
 
   function setUser(payload) {
     if (payload.name) {
@@ -50,6 +52,28 @@ export const useMainStore = defineStore('main', () => {
       })
   }
 
+  function fetchItems() {
+    axios
+      .get(`data-sources/items.json`)
+      .then((result) => {
+        history.value = result?.data?.data
+      })
+      .catch((error) => {
+        alert(error.message)
+      })
+  }
+
+  function fetchProjects() {
+    axios
+      .get(`data-sources/projects.json`)
+      .then((result) => {
+        history.value = result?.data?.data
+      })
+      .catch((error) => {
+        alert(error.message)
+      })
+  }
+
   return {
     userName,
     userEmail,
@@ -57,8 +81,12 @@ export const useMainStore = defineStore('main', () => {
     isFieldFocusRegistered,
     clients,
     history,
+    items,
+    projects,
     setUser,
     fetchSampleClients,
-    fetchSampleHistory
+    fetchSampleHistory,
+    fetchItems,
+    fetchProjects
   }
 })
