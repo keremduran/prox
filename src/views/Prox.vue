@@ -604,7 +604,38 @@ const materialFilters1 = reactive({
 // Filters json data (adds the filter on top of the previously filtered json) based on rate/len Sets the options for the next field which is dimension (All the unique non-empty column values)
 // 3. repeats until the end (careful with the last select)
 // Note: if user changes for example RateLen after setting multiple, every select field in front of it will be reset 
+function getMaterialOptions1(filterIndex: number) {
+	let options = [];
 
+	const filterNames = Object.keys(materialFilters1);
+	const nextFilterName = filterNames[filterIndex + 1];
+
+	materials.forEach(material => {
+		let accept = true;
+
+		Object.keys(material).forEach(key => {
+			if (
+				materialFilters1[key] && 
+				materialFilters1[key].value?.label && 
+				materialFilters1[key].value.label !== material[key]
+			) {				
+				accept = false;
+				return;
+			}
+		})
+
+		const newOption = material[nextFilterName].toString();
+
+		// filter-out duplicates and empty values
+		accept = accept && newOption?.length > 0 && options.indexOf(newOption) === -1;
+
+		if(accept){
+			options.push(material[nextFilterName]);
+		}
+	});
+
+	return options;
+}
 
 // handleClick and reset everything in-front of the current field
 function handleSelectMaterial(filterName: string) {
@@ -621,43 +652,10 @@ function handleSelectMaterial(filterName: string) {
 		materialFilters1[nextFilterName].options = [];
 	}
 
-	let options = [];
-
 	const nextFilterName = filterNames[filterIndex + 1];
 	const nextFilter = materialFilters1[nextFilterName];
 
-	materials.forEach(material => {
-		let accept = true;
-		
-
-		Object.keys(material).forEach(key => {
-			if (
-				materialFilters1[key] && 
-				materialFilters1[key].value?.label && 
-				materialFilters1[key].value.label !== material[key]
-			) {				
-				accept = false;
-				return;
-			}
-		})
-
-		// const newOption = typeof material[nextFilterName] === 'string' ? 
-		// 		material[nextFilterName] : 
-		// 		material[nextFilterName].toString();
-
-		const newOption = material[nextFilterName];
-
-		// filter-out duplicates and empty values
-		accept = accept && newOption?.length > 0 && options.indexOf(newOption) === -1;
-
-		if(nextFilterName === "dimension") {
-			console.log(options, newOption, options.indexOf(newOption) === -1);
-		}
-
-		if(accept){
-			options.push(material[nextFilterName]);
-		}
-	});
+	let options = getMaterialOptions1(filterIndex);
 
 	nextFilter.options = options;
 
@@ -667,9 +665,6 @@ function handleSelectMaterial(filterName: string) {
 
 	if(options.length === 0 || options.length === 1) {
 		handleSelectMaterial(nextFilterName);
-	}
-	else {
-		//console.log(filterName, filterValue, filterIndex, nextFilterName);
 	}
 
 }
@@ -731,6 +726,7 @@ function handleSelectMaterial(filterName: string) {
 				</div>
 				<BaseButtons>
 					<BaseButton type="reset" @click="handleResetMaterial" color="info" outline label="Reset" />
+					<BaseButton type="reset" @click="handleResetMaterial" color="success" outline label="Add" />
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
