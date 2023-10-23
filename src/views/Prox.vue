@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed, watchEffect } from 'vue'
-import { mdiMonitorCellphone, mdiTableBorder, mdiTableOff, mdiAccount, mdiMail, mdiGithub, mdiCloseOctagonOutline } from '@mdi/js'
+import { mdiMonitorCellphone, mdiTableBorder, mdiTableOff, mdiViewDashboard, mdiBookEdit, mdiAccount, mdiMail, mdiGithub, mdiCloseOctagonOutline, mdiShoppingSearch, mdiListBox, mdiListBoxOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
 import TableSampleClients from '@/components/TableSampleClients.vue'
 import CardBoxComponentEmpty from '@/components/CardBoxComponentEmpty.vue'
@@ -356,8 +356,7 @@ const materials = [
       "sqft": "",
       "workType": ""
     }
-  ]
-
+]
 
 const projects = [
 	{
@@ -422,6 +421,146 @@ const projects = [
 	}
 ]
 
+const rates = [
+  {
+    "material": "Insulation",
+    "type": "",
+    "rate": "0.605"
+  },
+  {
+    "material": "Drywall",
+    "type": "8'",
+    "rate": "0.345"
+  },
+  {
+    "material": "Drywall",
+    "type": "9'",
+    "rate": "0.366"
+  },
+  {
+    "material": "Drywall",
+    "type": "10'",
+    "rate": "0.414"
+  },
+  {
+    "material": "Drywall",
+    "type": "11'",
+    "rate": "0.442"
+  },
+  {
+    "material": "Drywall",
+    "type": "12'",
+    "rate": "0.457"
+  },
+  {
+    "material": "Frame",
+    "type": "8'",
+    "rate": "0.336"
+  },
+  {
+    "material": "Frame",
+    "type": "9'",
+    "rate": "0.354"
+  },
+  {
+    "material": "Frame",
+    "type": "10'",
+    "rate": "0.376"
+  },
+  {
+    "material": "Frame",
+    "type": "11'",
+    "rate": "0.395"
+  },
+  {
+    "material": "Frame",
+    "type": "12'",
+    "rate": "0.415"
+  },
+  {
+    "material": "Resilient Channel",
+    "type": "8'",
+    "rate": "0.336"
+  },
+  {
+    "material": "Resilient Channel",
+    "type": "9'",
+    "rate": "0.354"
+  },
+  {
+    "material": "Resilient Channel",
+    "type": "10'",
+    "rate": "0.376"
+  },
+  {
+    "material": "Resilient Channel",
+    "type": "11'",
+    "rate": "0.395"
+  },
+  {
+    "material": "Resilient Channel",
+    "type": "12'",
+    "rate": "0.415"
+  },
+  {
+    "material": "Suspended Ceiling",
+    "type": "",
+    "rate": "0.65"
+  },
+  {
+    "material": "T-bar",
+    "type": "",
+    "rate": "0.65"
+  },
+  {
+    "material": "Ceiling Tile",
+    "type": "",
+    "rate": "0.65"
+  },
+  {
+    "material": "R24",
+    "type": "",
+    "rate": "0.059"
+  },
+  {
+    "material": "Rockwool",
+    "type": "",
+    "rate": "0.077"
+  },
+  {
+    "material": "5/8",
+    "type": "",
+    "rate": "0.103"
+  },
+  {
+    "material": "Townhouse",
+    "type": "",
+    "rate": "0.014"
+  },
+  {
+    "material": "Energy Star",
+    "type": "",
+    "rate": "0.077"
+  },
+  {
+    "material": "Stack Townhouse",
+    "type": "",
+    "rate": "0.04"
+  },
+  {
+    "material": "Beam pocket",
+    "type": "",
+    "rate": "50"
+  },
+  {
+    "material": "Gable",
+    "type": "",
+    "rate": "75"
+  }
+]
+
+
+
 
 const projectFilters = reactive({
 	"contractor": "",
@@ -433,7 +572,7 @@ const projectFilters = reactive({
 	"Timesheet Email": ""
 });
 
-const materialFilters = reactive({
+const materialFilterNames = reactive({
 	"material": "",
 	"rateLen": "",
 	"dimension": "",
@@ -503,7 +642,7 @@ const getMaterialOptions = (field: string) => {
 	const options: any[] = [];
 	const foundLabels: string[] = [];
 
-	const filterIndex = Object.keys(materialFilters).indexOf(field);
+	const filterIndex = Object.keys(materialFilterNames).indexOf(field);
 
 	let filteredMaterials = [];
 
@@ -514,10 +653,10 @@ const getMaterialOptions = (field: string) => {
 	};
 
 	filteredMaterials = materials.filter(material => {
-		return Object.keys(materialFilters).every((filter, index) => {
+		return Object.keys(materialFilterNames).every((filter) => {
 			//if(index < filterIndex) return false;
 
-			const selectedValue = materialFilters[filter].label;
+			const selectedValue = materialFilterNames[filter].label;
 
 			// Stop condition
 			if (selectedValue && selectedValue !== material[filter]) {
@@ -534,7 +673,7 @@ const getMaterialOptions = (field: string) => {
 		// filter out duplicates and empty values
 		if (label.length > 0 && !foundLabels.find(l => l === label)) {
 			foundLabels.push(label);
-			options.push({ id: material.id, label: label.toString() })
+			options.push(label.toString())
 		}
 	})
 
@@ -574,17 +713,16 @@ function handleResetProject() {
 }
 
 function handleResetMaterial() {
-	Object.keys(materialFilters1).forEach((f, i) => {
+	Object.keys(materialFilters).forEach((f, i) => {
 		if(i === 0) {
-			materialFilters1[f].value = ""
+			materialFilters[f].value = ""
 			return;
 		}
-		materialFilters1[f] = {value: "", options: []}
+		materialFilters[f] = {value: "", options: []}
 	});
 }
 
-
-const materialFilters1 = reactive({
+const materialFilters = reactive({
 	"material": {value: "", options: getMaterialOptions("material")},
 	"rateLen": {value: "", options: []},
 	"dimension": {value: "", options: []},
@@ -593,6 +731,12 @@ const materialFilters1 = reactive({
 	"floor": {value: "", options: []},
 	"sqft": {value: "", options: []},
 	"workType": {value: "", options: []}
+});
+
+const materialControls = reactive({
+	"quantity": 0,
+	"rate": 0,
+	"selectedMaterials": []
 });
 
 // Purpose: there are 8 dropdown fields, each filters the json data
@@ -604,10 +748,10 @@ const materialFilters1 = reactive({
 // Filters json data (adds the filter on top of the previously filtered json) based on rate/len Sets the options for the next field which is dimension (All the unique non-empty column values)
 // 3. repeats until the end (careful with the last select)
 // Note: if user changes for example RateLen after setting multiple, every select field in front of it will be reset 
-function getMaterialOptions1(filterIndex: number) {
+function getMaterialOptionsByIndex(filterIndex: number) {
 	let options = [];
 
-	const filterNames = Object.keys(materialFilters1);
+	const filterNames = Object.keys(materialFilters);
 	const nextFilterName = filterNames[filterIndex + 1];
 
 	materials.forEach(material => {
@@ -615,9 +759,8 @@ function getMaterialOptions1(filterIndex: number) {
 
 		Object.keys(material).forEach(key => {
 			if (
-				materialFilters1[key] && 
-				materialFilters1[key].value?.label && 
-				materialFilters1[key].value.label !== material[key]
+				materialFilters[key]?.value && 
+				materialFilters[key].value !== material[key]
 			) {				
 				accept = false;
 				return;
@@ -640,22 +783,45 @@ function getMaterialOptions1(filterIndex: number) {
 // handleClick and reset everything in-front of the current field
 function handleSelectMaterial(filterName: string) {
 
-	const filterNames = Object.keys(materialFilters1);
+	const filterNames = Object.keys(materialFilters);
 	const filterIndex = filterNames.indexOf(filterName);
 
-	if(filterIndex === filterNames.length - 1) return;
+	// Last index (set rate)
+	if( filterName === "rateLen") {			
+		materialControls.rate = 0;
+
+		const materialName = materialFilters["material"].value;
+		const materialType = materialFilters["rateLen"].value;
+
+		const materialRate = rates.find(rate => {
+			if(rate.material && rate.material !== materialName) {
+				return false;
+			}
+
+			if(rate.type && rate.type.length > 0 && rate.type !== materialType) {
+				return false;
+			}
+
+			return true;
+		});
+
+		// for comparison to show the update rate box
+		materialControls["oldRate"] = Number(materialRate.rate);
+		materialControls.rate = Number(materialRate.rate);
+		return;
+	}
 
 	// Reset forward
 	for (let i = filterIndex + 1; i < filterNames.length; i++) {
 		const nextFilterName = filterNames[i];
-		materialFilters1[nextFilterName].value = "";
-		materialFilters1[nextFilterName].options = [];
+		materialFilters[nextFilterName].value = "";
+		materialFilters[nextFilterName].options = [];
 	}
 
 	const nextFilterName = filterNames[filterIndex + 1];
-	const nextFilter = materialFilters1[nextFilterName];
+	const nextFilter = materialFilters[nextFilterName];
 
-	let options = getMaterialOptions1(filterIndex);
+	let options = getMaterialOptionsByIndex(filterIndex);
 
 	nextFilter.options = options;
 
@@ -667,6 +833,26 @@ function handleSelectMaterial(filterName: string) {
 		handleSelectMaterial(nextFilterName);
 	}
 
+}
+
+let selectedMaterials = reactive([]);
+
+function handleAddMaterial() { 
+	const materialObject = {};
+	materialObject["quantity"] = materialControls.quantity;
+	materialObject["rate"] = materialControls.rate; 
+
+	for (let key of Object.keys(materialFilters)){ 
+		materialObject[key] = materialFilters[key].value; 
+	}
+	
+	materialControls.selectedMaterials.push(materialObject); 
+}
+
+function handleResetSelectedMaterials() {
+	console.log("test");
+	
+	materialControls.selectedMaterials = [];
 }
 
 </script>
@@ -686,6 +872,7 @@ function handleSelectMaterial(filterName: string) {
 					</div>
 				</div>
 			</SectionTitleLineWithButton>
+			<SectionTitleLineWithButton :icon="mdiViewDashboard" title="Select Project" />
 			<CardBox form @submit.prevent="submit">
 				<div class="grid gap-3 grid-flow-col auto-cols-auto">
 					<FormField label="CONTRACTOR">
@@ -711,41 +898,83 @@ function handleSelectMaterial(filterName: string) {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
+			<SectionTitleLineWithButton :icon="mdiShoppingSearch" title="Select Material" />
 			<CardBox form @submit.prevent="submit">
-				<div class="grid gap-3 grid-flow-col auto-cols-auto">
+				<div class="grid gap-3 grid-flow-col">
 					<FormField
 						:label="key.toUpperCase()"
-						v-for="key in Object.keys(materialFilters1)"
+						v-for="key in Object.keys(materialFilters)"
 					>
 						<FormControl 
-							v-model="materialFilters1[key].value" 
-							:options="materialFilters1[key].options" 
+							v-model="materialFilters[key].value" 
+							:options="materialFilters[key].options" 
 							@change="handleSelectMaterial(key)"
 						/>
 					</FormField>
 				</div>
+				<div class="grid gap-10 grid-cols-6 mb-10">
+					<FormField label="QUANTITY">
+						<input 
+							class="w-full"
+							v-model="materialControls['quantity']" 
+							type="number"
+							name="quantity"
+							max="100"
+						/>
+					</FormField>
+					<FormField label="RATE">
+						<input 
+							class="w-full"
+							v-model="materialControls['rate']" 
+							type="number"
+							name="rate"
+							max="10000"
+						/>
+					</FormField> 
+					<FormField label="Update Rate?" 
+						v-if="materialControls['rate'] && 
+						materialControls['rate'] !== materialControls['oldRate']"
+					>
+						<input 
+							class="p-3"
+							v-model="materialControls['updateRate']" 
+							type="checkbox"
+							name="updateRate"
+						/>
+					</FormField>
+				</div>
 				<BaseButtons>
-					<BaseButton type="reset" @click="handleResetMaterial" color="info" outline label="Reset" />
-					<BaseButton type="reset" @click="handleResetMaterial" color="success" outline label="Add" />
+					<BaseButton 
+						type="reset" 
+						@click="handleResetMaterial" 
+						color="info" 
+						outline 
+						label="Reset" 
+					/>
+					<BaseButton 
+						type="submit" 
+						@click="handleAddMaterial" 
+						color="success" 
+						outline 
+						label="Add Material" 
+					/>
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-			<NotificationBar color="info" :icon="mdiMonitorCellphone">
-				<b>Responsive table.</b> Collapses on mobile
-			</NotificationBar>
-
+			<SectionTitleLineWithButton :icon="mdiListBoxOutline" title="Selected Materials" />
 			<CardBox class="mb-6" has-table>
-				<TableSampleClients checkable />
-			</CardBox>
-
-			<SectionTitleLineWithButton :icon="mdiTableOff" title="Empty variation" />
-
-			<NotificationBar color="danger" :icon="mdiTableOff">
-				<b>Empty table.</b> When there's nothing to show
-			</NotificationBar>
-
-			<CardBox>
-				<CardBoxComponentEmpty />
+				<CardBoxComponentEmpty v-if="materialControls.selectedMaterials.length === 0" />
+				<TableSampleClients v-else :materials="materialControls.selectedMaterials" checkable />
+				<BaseButtons>
+					<BaseButton 
+						type="reset" 
+						@click="handleResetSelectedMaterials" 
+						color="info" 
+						outline 
+						label="Clear"
+					/>
+				</BaseButtons>
+				<BaseDivider />
 			</CardBox>
 		</SectionMain>
 	</LayoutAuthenticated>
