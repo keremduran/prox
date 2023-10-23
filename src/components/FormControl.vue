@@ -65,7 +65,7 @@ const selectedOption = computed(() => {
 
 const inputElClass = computed(() => {
   const base = [
-    'px-3 py-2 max-w-full focus:ring focus:outline-none border-gray-700 rounded w-full',
+    'pl-3 pr-7 py-2 max-w-full focus:ring focus:outline-none border-gray-700 rounded w-full',
     'dark:placeholder-gray-400',
     'disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none',
     computedType.value === 'textarea' ? 'h-24' : 'h-12',

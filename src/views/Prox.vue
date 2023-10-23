@@ -734,7 +734,7 @@ const materialFilters = reactive({
 });
 
 const materialControls = reactive({
-	"quantity": 0,
+	"quantity": 1,
 	"rate": 0,
 	"selectedMaterials": []
 });
@@ -786,8 +786,9 @@ function handleSelectMaterial(filterName: string) {
 	const filterNames = Object.keys(materialFilters);
 	const filterIndex = filterNames.indexOf(filterName);
 
-	// Last index (set rate)
-	if( filterName === "rateLen") {			
+	// Setting rate... rateLen field will be renamed to type
+  // material and rateLen fields are unique identifiers for price.
+	if(filterName === "rateLen") {			
 		materialControls.rate = 0;
 
 		const materialName = materialFilters["material"].value;
@@ -808,8 +809,12 @@ function handleSelectMaterial(filterName: string) {
 		// for comparison to show the update rate box
 		materialControls["oldRate"] = Number(materialRate.rate);
 		materialControls.rate = Number(materialRate.rate);
-		return;
 	}
+
+  // Last index
+  if(filterIndex === filterNames.length - 1) {
+    return;
+  }
 
 	// Reset forward
 	for (let i = filterIndex + 1; i < filterNames.length; i++) {
@@ -834,8 +839,6 @@ function handleSelectMaterial(filterName: string) {
 	}
 
 }
-
-let selectedMaterials = reactive([]);
 
 function handleAddMaterial() { 
 	const materialObject = {};
@@ -874,45 +877,49 @@ function handleResetSelectedMaterials() {
 			</SectionTitleLineWithButton>
 			<SectionTitleLineWithButton :icon="mdiViewDashboard" title="Select Project" />
 			<CardBox form @submit.prevent="submit">
-				<div class="grid gap-3 grid-flow-col auto-cols-auto">
-					<FormField label="CONTRACTOR">
-						<FormControl 
-							v-model="projectFilters['contractor']" 
-							:options="getContractorOptions()"
-							@change="handleSelectProject('contractor')"
-						/>
-					</FormField>
-					<FormField
-						:label="key.toUpperCase()"
-						v-for="key in Object.keys(projectFilters).filter(p => p !== 'contractor')"
-					>
-						<FormControl 
-							v-model="projectFilters[key]" 
-							:options="getProjectOptions(key)" 
-							@change="handleSelectProject(key)"
-						/>
-					</FormField>
-				</div>
-				<BaseButtons>
-					<BaseButton type="reset" @click="handleResetProject" color="info" outline label="Reset" />
-				</BaseButtons>
+        <div class="overflow-x-scroll">
+          <div class="w-max flex flex-row gap-4 p-2">
+            <FormField label="CONTRACTOR">
+              <FormControl 
+                v-model="projectFilters['contractor']" 
+                :options="getContractorOptions()"
+                @change="handleSelectProject('contractor')"
+              />
+            </FormField>
+            <FormField
+              :label="key.toUpperCase()"
+              v-for="key in Object.keys(projectFilters).filter(p => p !== 'contractor')"
+            >
+              <FormControl 
+                v-model="projectFilters[key]" 
+                :options="getProjectOptions(key)" 
+                @change="handleSelectProject(key)"
+              />
+            </FormField>
+          </div>
+        </div>
+        <BaseButtons class="py-4">
+					  <BaseButton type="reset" @click="handleResetProject" color="info" outline label="Reset" />
+				  </BaseButtons>
 				<BaseDivider />
 			</CardBox>
 			<SectionTitleLineWithButton :icon="mdiShoppingSearch" title="Select Material" />
 			<CardBox form @submit.prevent="submit">
-				<div class="grid gap-3 grid-flow-col">
-					<FormField
-						:label="key.toUpperCase()"
-						v-for="key in Object.keys(materialFilters)"
-					>
-						<FormControl 
-							v-model="materialFilters[key].value" 
-							:options="materialFilters[key].options" 
-							@change="handleSelectMaterial(key)"
-						/>
-					</FormField>
+				<div class="overflow-x-scroll">
+          <div class="w-max flex flex-row gap-4 p-2">
+              <FormField
+              :label="key.toUpperCase()"
+              v-for="key in Object.keys(materialFilters)"
+            >
+              <FormControl 
+                v-model="materialFilters[key].value" 
+                :options="materialFilters[key].options" 
+                @change="handleSelectMaterial(key)"
+              />
+            </FormField>
+          </div>
 				</div>
-				<div class="grid gap-10 grid-cols-6 mb-10">
+				<div class="grid gap-10 grid-cols-6 py-5">
 					<FormField label="QUANTITY">
 						<input 
 							class="w-full"
@@ -920,6 +927,7 @@ function handleResetSelectedMaterials() {
 							type="number"
 							name="quantity"
 							max="100"
+              min="1"
 						/>
 					</FormField>
 					<FormField label="RATE">
@@ -929,6 +937,7 @@ function handleResetSelectedMaterials() {
 							type="number"
 							name="rate"
 							max="10000"
+              min="0"
 						/>
 					</FormField> 
 					<FormField label="Update Rate?" 
@@ -943,7 +952,7 @@ function handleResetSelectedMaterials() {
 						/>
 					</FormField>
 				</div>
-				<BaseButtons>
+				<BaseButtons class="pt-5">
 					<BaseButton 
 						type="reset" 
 						@click="handleResetMaterial" 
