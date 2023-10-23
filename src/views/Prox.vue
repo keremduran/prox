@@ -919,7 +919,7 @@ function handleResetSelectedMaterials() {
             </FormField>
           </div>
 				</div>
-				<div class="grid gap-10 grid-cols-6 py-5">
+				<div class="w-max flex flex-row gap-4 p-2">
 					<FormField label="QUANTITY">
 						<input 
 							class="w-full"
