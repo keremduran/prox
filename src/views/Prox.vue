@@ -2,7 +2,7 @@
 import { reactive, computed, watchEffect } from 'vue'
 import { mdiMonitorCellphone, mdiTableBorder, mdiTableOff, mdiViewDashboard, mdiBookEdit, mdiAccount, mdiMail, mdiGithub, mdiCloseOctagonOutline, mdiShoppingSearch, mdiListBox, mdiListBoxOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
-import TableSampleClients from '@/components/TableSampleClients.vue'
+import TableMaterials from '@/components/TableMaterials.vue'
 import CardBoxComponentEmpty from '@/components/CardBoxComponentEmpty.vue'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
@@ -13,6 +13,14 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
+
+import html2pdf from 'html2pdf.js';
+//import emailjs from '@emailjs/browser';
+// public key: rTC3ppKoqqlH4BawQ
+// service id: service_phkwzcn
+
+// console.log(emailjs)
+//emailjs.send();
 
 const materials = [
     {
@@ -560,7 +568,8 @@ const rates = [
 ]
 
 
-
+const documentDate = () => new Date(Date.now()).toLocaleDateString();
+const documentNo = () => Date.now().toString(36);
 
 const projectFilters = reactive({
 	"contractor": "",
@@ -736,7 +745,8 @@ const materialFilters = reactive({
 const materialControls = reactive({
 	"quantity": 1,
 	"rate": 0,
-	"selectedMaterials": []
+	"selectedMaterials": [],
+  "takeoffPdf": undefined
 });
 
 // Purpose: there are 8 dropdown fields, each filters the json data
@@ -807,8 +817,8 @@ function handleSelectMaterial(filterName: string) {
 		});
 
 		// for comparison to show the update rate box
-		materialControls["oldRate"] = Number(materialRate.rate);
-		materialControls.rate = Number(materialRate.rate);
+		materialControls["oldRate"] = materialRate?.rate ? Number(materialRate.rate) : 0;
+		materialControls.rate = materialRate?.rate ? Number(materialRate.rate) : 0;
 	}
 
   // Last index
@@ -858,6 +868,68 @@ function handleResetSelectedMaterials() {
 	materialControls.selectedMaterials = [];
 }
 
+async function handleEmailTakeoff() {
+  console.log(materialControls.selectedMaterials.length);
+
+  const element = document.getElementById('takeoff-pdf')
+
+  const opt = {
+    margin:       0,
+    filename:     'takeoff.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  const pdf = await html2pdf().set(opt).from(element).output('blob');
+  console.log(pdf);
+
+  const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
+  let list = new DataTransfer();
+  list.items.add(file);
+  
+  const pdfInput = document.getElementById('takeoff-pdf-input') as HTMLInputElement 
+
+  console.log(pdfInput);
+
+  try {
+    pdfInput.files = list.files;
+  } catch (error) {
+    console.log(error);
+  }
+
+  const emailButton = document.getElementById('email-button');
+
+  emailButton.click();
+
+  // try {
+  //   emailjs.send("service_phkwzcn","template_pz23olr",{
+  //   from_name: "ProX Contractors",
+  //   to_name: "Client Name",
+  //   message: "Here is your takeoff",
+  //   attachment: pdf,
+  //   reply_to: "test4",
+  // }, "rTC3ppKoqqlH4BawQ");
+  // } catch (error) {
+  //   console.log({error})  
+  // }
+  
+
+}
+
+const total = computed(() => {
+  let sum = 0;
+  try {
+    materialControls.selectedMaterials.forEach(material => {
+    sum += Number(material.quantity) * Number(material.rate);
+  })
+  } catch (error) {
+    console.error(error);
+  }
+
+  return sum.toFixed(2);
+});
+
 </script>
 
 <template>
@@ -867,18 +939,18 @@ function handleResetSelectedMaterials() {
 				<div>
 					<div class="flex justify-between gap-20">
 						<span>Document Number:</span>
-						<span>836</span>
+						<span>{{ documentNo() }}</span>
 					</div>
 					<div class="flex justify-between gap-20">
 						<span>Date:</span>
-						<span>Oct 19, 2023</span>
+						<span>{{ documentDate() }}</span>
 					</div>
 				</div>
 			</SectionTitleLineWithButton>
 			<SectionTitleLineWithButton :icon="mdiViewDashboard" title="Select Project" />
 			<CardBox form @submit.prevent="submit">
-        <div class="overflow-x-scroll">
-          <div class="w-max flex flex-row gap-4 p-2">
+        <div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-2">
             <FormField label="CONTRACTOR">
               <FormControl 
                 v-model="projectFilters['contractor']" 
@@ -898,19 +970,19 @@ function handleResetSelectedMaterials() {
             </FormField>
           </div>
         </div>
-        <BaseButtons class="py-4">
-					  <BaseButton type="reset" @click="handleResetProject" color="info" outline label="Reset" />
-				  </BaseButtons>
+        <BaseButtons class="p-2 py-4">
+					<BaseButton type="reset" @click="handleResetProject" color="info" outline label="Reset" />
+				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
 			<SectionTitleLineWithButton :icon="mdiShoppingSearch" title="Select Material" />
 			<CardBox form @submit.prevent="submit">
-				<div class="overflow-x-scroll">
-          <div class="w-max flex flex-row gap-4 p-2">
+				<div class="overflow-x-scroll p-2">
+          <div class="w-max flex flex-row gap-4">
               <FormField
-              :label="key.toUpperCase()"
-              v-for="key in Object.keys(materialFilters)"
-            >
+                :label="key.toUpperCase()"
+                v-for="key in Object.keys(materialFilters)"
+              >
               <FormControl 
                 v-model="materialFilters[key].value" 
                 :options="materialFilters[key].options" 
@@ -952,7 +1024,7 @@ function handleResetSelectedMaterials() {
 						/>
 					</FormField>
 				</div>
-				<BaseButtons class="pt-5">
+				<BaseButtons class="p-2 pt-5">
 					<BaseButton 
 						type="reset" 
 						@click="handleResetMaterial" 
@@ -973,8 +1045,8 @@ function handleResetSelectedMaterials() {
 			<SectionTitleLineWithButton :icon="mdiListBoxOutline" title="Selected Materials" />
 			<CardBox class="mb-6" has-table>
 				<CardBoxComponentEmpty v-if="materialControls.selectedMaterials.length === 0" />
-				<TableSampleClients v-else :materials="materialControls.selectedMaterials" checkable />
-				<BaseButtons>
+				<TableMaterials v-else :materials="materialControls.selectedMaterials" checkable />
+				<BaseButtons class="p-5">
 					<BaseButton 
 						type="reset" 
 						@click="handleResetSelectedMaterials" 
@@ -982,9 +1054,104 @@ function handleResetSelectedMaterials() {
 						outline 
 						label="Clear"
 					/>
+          <BaseButton 
+						type="submit" 
+						@click="handleEmailTakeoff" 
+						color="success" 
+						label="Submit Takeoff"
+					/>
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
+      <form class="hidden" id="email-form" action="https://formsubmit.co/keremduran.fw@gmail.com" enctype="multipart/form-data" method="POST" target="_blank">
+        <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
+        <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
+        <input type="hidden" name="message" value="Your takeoff document.">
+        <input type="hidden" name="_next" value="http://localhost:5173/#/prox">
+        <input type="hidden" name="_subject" value="Your Takeoff">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_autoresponse" value="hello">
+        <button id="email-button" type="submit" class="hidden">Submit Form</button>
+      </form>
+      <div class="">
+        <div id="takeoff-pdf" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
+          <div class="flex justify-between py-5">
+            <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
+            <div class="absolute top-0 right-0"><img src="prox-logo.png" alt="ProX Logo"></div>
+          </div>
+          <div class="flex justify-between py-5">
+            <div class="w-[15rem]">
+              <div class="flex justify-between">
+                <div>Document Number: </div>
+                <div>{{documentNo()}}</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Date: </div>
+                <div>{{documentDate()}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between py-5">
+            <div class="w-[15rem]">
+              <div class="flex justify-between">
+                <div>Contractor: </div>
+                <div>{{projectFilters.contractor?.label}}</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Builder: </div>
+                <div>{{projectFilters.builder?.label}}</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Site: </div>
+                <div>{{projectFilters.site?.label}}</div>
+              </div>
+            </div>
+            <div class="w-[15rem]">
+              <div class="flex justify-between">
+                <div>Address: </div>
+                <div>{{projectFilters.address?.label}}</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Contact: </div>
+                <div>{{projectFilters.contact?.label}}</div>
+              </div>
+              <div class="flex justify-between">
+                <div>Email: </div>
+                <div>{{ projectFilters["Timesheet Email"]?.label }}</div>
+              </div>
+            </div>
+          </div>
+          <!-- material table -->
+          <div class="flex justify-between py-5">
+            <div v-if="materialControls.selectedMaterials?.length > 0" class="w-full">
+            <!-- thead -->
+              <div class="grid grid-cols-10 py-2 pb-5 bg-[#1c4966]">
+                <div class="text-center p-1" v-for="field in Object.keys(materialControls.selectedMaterials[0])">
+                    {{field.toLocaleUpperCase()}}
+                </div>
+              </div>
+              <!-- tbody -->
+              <div>
+                <!-- tr -->
+                <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2"
+                  v-for="material in materialControls.selectedMaterials">
+                  <div class="text-center p-1" v-for="field in Object.keys(material)">
+                    {{material[field]}}
+                  </div>
+                </div>
+              </div>
+              <!-- tfoot -->
+              <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2 font-bold">
+                <div class="text-center p-1">Total: </div>
+                <div class="text-center p-1">{{total}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="prox-footer.png" alt="ProX Contact Info"></div>
+
+  
+        </div>
+      </div>
 		</SectionMain>
 	</LayoutAuthenticated>
 </template>
