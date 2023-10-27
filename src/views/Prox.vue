@@ -1077,7 +1077,7 @@ const total = computed(() => {
         <div id="takeoff-pdf" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
           <div class="flex justify-between py-5">
             <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
-            <div class="absolute top-0 right-0"><img src="prox-logo.png" alt="ProX Logo"></div>
+            <div class="absolute top-0 right-0"><img src="/prox-logo.png" alt="ProX Logo"></div>
           </div>
           <div class="flex justify-between py-5">
             <div class="w-[15rem]">
@@ -1147,7 +1147,7 @@ const total = computed(() => {
               </div>
             </div>
           </div>
-          <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="prox-footer.png" alt="ProX Contact Info"></div>
+          <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info"></div>
 
   
         </div>
