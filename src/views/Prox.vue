@@ -570,6 +570,9 @@ const rates = [
 
 const documentDate = () => new Date(Date.now()).toLocaleDateString();
 const documentNo = () => Date.now().toString(36);
+const currentURL = () => window.location.pathname
+
+console.log(currentURL());
 
 const projectFilters = reactive({
 	"contractor": "",
@@ -1063,14 +1066,14 @@ const total = computed(() => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form class="hidden" id="email-form" action="https://formsubmit.co/leonardorbc@gmail.com" enctype="multipart/form-data" method="POST" target="_blank">
+      <form class="hidden" id="email-form" action="https://formsubmit.co/leonardorbc@gmail.com" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">
-        <input type="hidden" name="_next" value="http://localhost:5173/#/prox">
+        <input type="hidden" name="_next" :value="currentURL()">
         <input type="hidden" name="_subject" value="Your Takeoff">
         <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_autoresponse" value="hello">
+        <!-- <input type="hidden" name="_autoresponse" value="hello"> -->
         <button id="email-button" type="submit" class="hidden">Submit Form</button>
       </form>
       <div class="hidden">
