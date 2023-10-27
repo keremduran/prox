@@ -1073,7 +1073,7 @@ const total = computed(() => {
         <input type="hidden" name="_autoresponse" value="hello">
         <button id="email-button" type="submit" class="hidden">Submit Form</button>
       </form>
-      <div class="">
+      <div class="hidden">
         <div id="takeoff-pdf" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
           <div class="flex justify-between py-5">
             <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
