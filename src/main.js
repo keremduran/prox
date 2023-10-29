@@ -1,9 +1,13 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { VueFire, VueFireAuth } from 'vuefire'
+import { firebaseApp } from './firebase'
+import { useFirestore } from 'vuefire'
 
 import App from './App.vue'
 import router from './router'
 import { useMainStore } from '@/stores/main.js'
+// import { initializeApp } from 'firebase/app'
 
 import './css/main.css'
 
@@ -11,7 +15,15 @@ import './css/main.css'
 const pinia = createPinia()
 
 // Create Vue app
-createApp(App).use(router).use(pinia).mount('#app')
+createApp(App).use(router).use(pinia).use(VueFire, {
+  // imported above but could also just be created here
+  firebaseApp,
+  modules: [
+    // we will see other modules later on
+    VueFireAuth(),
+  ],
+})
+.mount('#app')
 
 // Init main store
 const mainStore = useMainStore(pinia)

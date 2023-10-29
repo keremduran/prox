@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { reactive, computed, watchEffect } from 'vue'
-import { mdiMonitorCellphone, mdiTableBorder, mdiTableOff, mdiViewDashboard, mdiBookEdit, mdiAccount, mdiMail, mdiGithub, mdiCloseOctagonOutline, mdiShoppingSearch, mdiListBox, mdiListBoxOutline } from '@mdi/js'
+import { reactive, computed, watchEffect} from 'vue'
+import { mdiTableBorder,mdiViewDashboard, mdiShoppingSearch, mdiListBoxOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
 import TableMaterials from '@/components/TableMaterials.vue'
 import CardBoxComponentEmpty from '@/components/CardBoxComponentEmpty.vue'
@@ -15,6 +15,13 @@ import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 
 import html2pdf from 'html2pdf.js';
+
+import {getMaterials, addMaterial} from '../firebase'
+
+//@ts-ignore
+let materials = await getMaterials();
+
+// const materials = firebaseMaterials;
 //import emailjs from '@emailjs/browser';
 // public key: rTC3ppKoqqlH4BawQ
 // service id: service_phkwzcn
@@ -22,349 +29,357 @@ import html2pdf from 'html2pdf.js';
 // console.log(emailjs)
 //emailjs.send();
 
-const materials = [
+const materials1 = [
     {
       "id": "material1",
-      "material": "Insulation",
-      "rateLen": "R12",
+      "name": "Insulation",
+      "type": "R12",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "8'",
+      "height": "8'",
       "floor": "Garage",
       "sqft": "",
       "workType": "Prep"
     },
     {
       "id": "material2",
-      "material": "Insulation",
-      "rateLen": "R14",
+      "name": "Insulation",
+      "type": "R14",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "9'",
+      "height": "9'",
       "floor": "Basement",
       "sqft": "",
       "workType": "Garage"
     },
     {
       "id": "material3",
-      "material": "Insulation",
-      "rateLen": "R20",
+      "name": "Insulation",
+      "type": "R20",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "10'",
+      "height": "10'",
       "floor": "Main Floor",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material4",
-      "material": "Insulation",
-      "rateLen": "R22",
+      "name": "Insulation",
+      "type": "R22",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "11'",
+      "height": "11'",
       "floor": "Ground Floor",
       "sqft": "49",
       "workType": ""
     },
     {
       "id": "material5",
-      "material": "Insulation",
-      "rateLen": "R24",
+      "name": "Insulation",
+      "type": "R24",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "12'",
+      "height": "12'",
       "floor": "1st Floor",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material6",
-      "material": "Insulation",
-      "rateLen": "R28",
+      "name": "Insulation",
+      "type": "R28",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "2nd Floor",
       "sqft": "20",
       "workType": ""
     },
     {
       "id": "material7",
-      "material": "Insulation",
-      "rateLen": "R31",
+      "name": "Insulation",
+      "type": "R31",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "3rd Floor",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material8",
-      "material": "Insulation",
-      "rateLen": "R40",
+      "name": "Insulation",
+      "type": "R40",
       "dimension": "16",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "4th Floor",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material9",
-      "material": "Insulation",
-      "rateLen": "R12",
+      "name": "Insulation",
+      "type": "R12",
       "dimension": "24",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material10",
-      "material": "Insulation",
-      "rateLen": "R20",
+      "name": "Insulation",
+      "type": "R20",
       "dimension": "24",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material11",
-      "material": "Insulation",
-      "rateLen": "R22",
+      "name": "Insulation",
+      "type": "R22",
       "dimension": "24",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material12",
-      "material": "Insulation",
-      "rateLen": "R28",
+      "name": "Insulation",
+      "type": "R28",
       "dimension": "24",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material13",
-      "material": "Insulation",
-      "rateLen": "R31",
+      "name": "Insulation",
+      "type": "R31",
       "dimension": "24",
       "grade": "Rockwool",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material14",
-      "material": "Drywall",
-      "rateLen": "8'",
+      "name": "Drywall",
+      "type": "8'",
       "dimension": "1/2",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "32",
       "workType": ""
     },
     {
       "id": "material15",
-      "material": "Drywall",
-      "rateLen": "8'",
+      "name": "Drywall",
+      "type": "8'",
       "dimension": "5/8",
       "grade": "Firetape",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material16",
-      "material": "Drywall",
-      "rateLen": "9'",
+      "name": "Drywall",
+      "type": "9'",
       "dimension": "1/2",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "36",
       "workType": ""
     },
     {
       "id": "material17",
-      "material": "Drywall",
-      "rateLen": "9'",
+      "name": "Drywall",
+      "type": "9'",
       "dimension": "5/8",
       "grade": "Firetape",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material18",
-      "material": "Drywall",
-      "rateLen": "10'",
+      "name": "Drywall",
+      "type": "10'",
       "dimension": "1/2",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "40",
       "workType": ""
     },
     {
       "id": "material19",
-      "material": "Drywall",
-      "rateLen": "10'",
+      "name": "Drywall",
+      "type": "10'",
       "dimension": "5/8",
       "grade": "Firetape",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material20",
-      "material": "Drywall",
-      "rateLen": "12'",
+      "name": "Drywall",
+      "type": "12'",
       "dimension": "1/2",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "48",
       "workType": ""
     },
     {
       "id": "material21",
-      "material": "Drywall",
-      "rateLen": "12'",
+      "name": "Drywall",
+      "type": "12'",
       "dimension": "5/8",
       "grade": "Firetape",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material22",
-      "material": "Resilient Channel",
-      "rateLen": "",
+      "name": "Resilient Channel",
+      "type": "",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material23",
-      "material": "Gable",
-      "rateLen": "",
+      "name": "Gable",
+      "type": "",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material24",
-      "material": "Beam pocket",
-      "rateLen": "",
+      "name": "Beam pocket",
+      "type": "",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material25",
-      "material": "Hour",
-      "rateLen": "",
+      "name": "Hour",
+      "type": "",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material26",
-      "material": "Premium",
-      "rateLen": "Townhouse",
+      "name": "Premium",
+      "type": "Townhouse",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material27",
-      "material": "Premium",
-      "rateLen": "Stack Townhouse",
+      "name": "Premium",
+      "type": "Stack Townhouse",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material28",
-      "material": "Premium",
-      "rateLen": "Energy Start",
+      "name": "Premium",
+      "type": "Energy Start",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material29",
-      "material": "Difficulty",
-      "rateLen": "Easy",
+      "name": "Difficulty",
+      "type": "Easy",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material30",
-      "material": "Difficulty",
-      "rateLen": "Medium",
+      "name": "Difficulty",
+      "type": "Medium",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     },
     {
       "id": "material31",
-      "material": "Difficulty",
-      "rateLen": "Hard",
+      "name": "Difficulty",
+      "type": "Hard",
       "dimension": "",
       "grade": "",
-      "ceilingHeight": "",
+      "height": "",
       "floor": "",
       "sqft": "",
       "workType": ""
     }
 ]
+
+// materials1.forEach(m => {
+//   const {id, ...material} = m;
+//   addMaterial(material);
+// })
+
+
+// const materials = materialsRef;
 
 const projects = [
 	{
@@ -431,137 +446,137 @@ const projects = [
 
 const rates = [
   {
-    "material": "Insulation",
+    "name": "Insulation",
     "type": "",
     "rate": "0.605"
   },
   {
-    "material": "Drywall",
+    "name": "Drywall",
     "type": "8'",
     "rate": "0.345"
   },
   {
-    "material": "Drywall",
+    "name": "Drywall",
     "type": "9'",
     "rate": "0.366"
   },
   {
-    "material": "Drywall",
+    "name": "Drywall",
     "type": "10'",
     "rate": "0.414"
   },
   {
-    "material": "Drywall",
+    "name": "Drywall",
     "type": "11'",
     "rate": "0.442"
   },
   {
-    "material": "Drywall",
+    "name": "Drywall",
     "type": "12'",
     "rate": "0.457"
   },
   {
-    "material": "Frame",
+    "name": "Frame",
     "type": "8'",
     "rate": "0.336"
   },
   {
-    "material": "Frame",
+    "name": "Frame",
     "type": "9'",
     "rate": "0.354"
   },
   {
-    "material": "Frame",
+    "name": "Frame",
     "type": "10'",
     "rate": "0.376"
   },
   {
-    "material": "Frame",
+    "name": "Frame",
     "type": "11'",
     "rate": "0.395"
   },
   {
-    "material": "Frame",
+    "name": "Frame",
     "type": "12'",
     "rate": "0.415"
   },
   {
-    "material": "Resilient Channel",
+    "name": "Resilient Channel",
     "type": "8'",
     "rate": "0.336"
   },
   {
-    "material": "Resilient Channel",
+    "name": "Resilient Channel",
     "type": "9'",
     "rate": "0.354"
   },
   {
-    "material": "Resilient Channel",
+    "name": "Resilient Channel",
     "type": "10'",
     "rate": "0.376"
   },
   {
-    "material": "Resilient Channel",
+    "name": "Resilient Channel",
     "type": "11'",
     "rate": "0.395"
   },
   {
-    "material": "Resilient Channel",
+    "name": "Resilient Channel",
     "type": "12'",
     "rate": "0.415"
   },
   {
-    "material": "Suspended Ceiling",
+    "name": "Suspended Ceiling",
     "type": "",
     "rate": "0.65"
   },
   {
-    "material": "T-bar",
+    "name": "T-bar",
     "type": "",
     "rate": "0.65"
   },
   {
-    "material": "Ceiling Tile",
+    "name": "Ceiling Tile",
     "type": "",
     "rate": "0.65"
   },
   {
-    "material": "R24",
+    "name": "R24",
     "type": "",
     "rate": "0.059"
   },
   {
-    "material": "Rockwool",
+    "name": "Rockwool",
     "type": "",
     "rate": "0.077"
   },
   {
-    "material": "5/8",
+    "name": "5/8",
     "type": "",
     "rate": "0.103"
   },
   {
-    "material": "Townhouse",
+    "name": "Townhouse",
     "type": "",
     "rate": "0.014"
   },
   {
-    "material": "Energy Star",
+    "name": "Energy Star",
     "type": "",
     "rate": "0.077"
   },
   {
-    "material": "Stack Townhouse",
+    "name": "Stack Townhouse",
     "type": "",
     "rate": "0.04"
   },
   {
-    "material": "Beam pocket",
+    "name": "Beam pocket",
     "type": "",
     "rate": "50"
   },
   {
-    "material": "Gable",
+    "name": "Gable",
     "type": "",
     "rate": "75"
   }
@@ -571,8 +586,6 @@ const rates = [
 const documentDate = () => new Date(Date.now()).toLocaleDateString();
 const documentNo = () => Date.now().toString(36);
 const currentURL = () => window.location.pathname
-
-console.log(currentURL());
 
 const projectFilters = reactive({
 	"contractor": "",
@@ -585,11 +598,11 @@ const projectFilters = reactive({
 });
 
 const materialFilterNames = reactive({
-	"material": "",
-	"rateLen": "",
+	"name": "",
+	"type": "",
 	"dimension": "",
 	"grade": "",
-	"ceilingHeight": "",
+	"height": "",
 	"floor": "",
 	"sqft": "",
 	"workType": ""
@@ -658,7 +671,9 @@ const getMaterialOptions = (field: string) => {
 
 	let filteredMaterials = [];
 
-	if(filterIndex === 0) filteredMaterials = materials;
+	if(filterIndex === 0) {
+    filteredMaterials = materials;
+  }
 	else {
 		// Apply all the filters that come before it.
 		filteredMaterials = [];
@@ -699,7 +714,7 @@ watchEffect(() => {
     const options = field === 'contractor' ? getContractorOptions() : getProjectOptions(field)
     // If there is only one option, assign it to projectFilters
     if (options.length === 1) {
-      projectFilters[field] = options[0]
+      projectFilters[field] = options[0];
     }
   })
 })
@@ -735,11 +750,11 @@ function handleResetMaterial() {
 }
 
 const materialFilters = reactive({
-	"material": {value: "", options: getMaterialOptions("material")},
-	"rateLen": {value: "", options: []},
+	"name": {value: "", options: getMaterialOptions("name")},
+	"type": {value: "", options: []},
 	"dimension": {value: "", options: []},
 	"grade": {value: "", options: []},
-	"ceilingHeight": {value: "", options: []},
+	"height": {value: "", options: []},
 	"floor": {value: "", options: []},
 	"sqft": {value: "", options: []},
 	"workType": {value: "", options: []}
@@ -801,14 +816,14 @@ function handleSelectMaterial(filterName: string) {
 
 	// Setting rate... rateLen field will be renamed to type
   // material and rateLen fields are unique identifiers for price.
-	if(filterName === "rateLen") {			
+	if(filterName === "type") {			
 		materialControls.rate = 0;
 
-		const materialName = materialFilters["material"].value;
-		const materialType = materialFilters["rateLen"].value;
+		const materialName = materialFilters["name"].value;
+		const materialType = materialFilters["type"].value;
 
 		const materialRate = rates.find(rate => {
-			if(rate.material && rate.material !== materialName) {
+			if(rate["name"] && rate["name"] !== materialName) {
 				return false;
 			}
 
@@ -866,13 +881,11 @@ function handleAddMaterial() {
 }
 
 function handleResetSelectedMaterials() {
-	console.log("test");
-	
 	materialControls.selectedMaterials = [];
 }
 
 async function handleEmailTakeoff() {
-  console.log(materialControls.selectedMaterials.length);
+  console.log("EMAILING TAKEOFF");
 
   const element = document.getElementById('takeoff-pdf')
 
@@ -982,10 +995,10 @@ const total = computed(() => {
 			<CardBox form @submit.prevent="submit">
 				<div class="overflow-x-scroll p-2">
           <div class="w-max flex flex-row gap-4">
-              <FormField
-                :label="key.toUpperCase()"
-                v-for="key in Object.keys(materialFilters)"
-              >
+            <FormField
+              :label="key.toUpperCase()"
+              v-for="key in Object.keys(materialFilters)"
+            >
               <FormControl 
                 v-model="materialFilters[key].value" 
                 :options="materialFilters[key].options" 
@@ -1066,7 +1079,14 @@ const total = computed(() => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form class="hidden" id="email-form" action="https://formsubmit.co/leonardorbc@gmail.com" enctype="multipart/form-data" method="POST" target="_self">
+      <h1>TEST</h1>
+      <ul>
+        <li v-for="m in materials" :key="m.name">
+          <span v-for="k in Object.keys(m)">{{ m[k] }}&nbsp;</span>
+        </li>
+
+      </ul>
+      <form class="hidden" id="email-form" action="https://formsubmit.co/kerem@weareoutpost.ca" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">
