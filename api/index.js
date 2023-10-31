@@ -79,7 +79,7 @@ app.post('/api/email', (req, res) => {
 	// 	res.end(error);
 	// }
 
-	console.log(JSON.stringify(req.body));
+	console.log(JSON.stringify(req));
 	res.end("Test")
 });
 
