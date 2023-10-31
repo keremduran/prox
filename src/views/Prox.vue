@@ -545,26 +545,26 @@ async function handleEmailTakeoff() {
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
-  const pdf = await html2pdf().set(opt).from(element).output('dataurlstring');
+  const pdf = await html2pdf().set(opt).from(element).output('blob');
   console.log(pdf);
 
-  // const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
-  // let list = new DataTransfer();
-  // list.items.add(file);
+  const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
+  let list = new DataTransfer();
+  list.items.add(file);
   
-  // const pdfInput = document.getElementById('takeoff-pdf-input') as HTMLInputElement 
+  const pdfInput = document.getElementById('takeoff-pdf-input') as HTMLInputElement 
 
-  // console.log(pdfInput);
+  console.log(pdfInput);
 
-  // try {
-  //   pdfInput.files = list.files;
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    pdfInput.files = list.files;
+  } catch (error) {
+    console.log(error);
+  }
 
-  // const emailButton = document.getElementById('email-button');
+  const emailButton = document.getElementById('email-button');
 
-  // emailButton.click();
+  emailButton.click();
 
   let emailUrl = "https://prox-virid.vercel.app/api/email";
 
@@ -581,14 +581,12 @@ async function handleEmailTakeoff() {
 	// 		"MessageStream": "outbound"
 	// }
 
-  fetch('https://prox-virid.vercel.app/api/email/kerem@weareoutpost.ca/keremduran.fw@gmail.com/Test/TestBody/TestAttachment/' + pdf)
-
-  addParam("kerem@weareoutpost.ca");
-  addParam("keremduran.fw@gmail.com");
-  addParam("Test Email");
-  addParam("testEmail");
-  addParam("my-pdf.pdf");
-  addParam(pdf);
+  // addParam("kerem@weareoutpost.ca");
+  // addParam("keremduran.fw@gmail.com");
+  // addParam("Test Email");
+  // addParam("testEmail");
+  // addParam("my-pdf.pdf");
+  // addParam(pdf);
 
   try {
     //@ts-ignore
@@ -759,7 +757,7 @@ const submit = () => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form class="hidden" id="email-form" action="https://formsubmit.co/leonardorbc@gmail.com" enctype="multipart/form-data" method="POST" target="_self">
+      <form class="hidden" id="email-form" action="https://formsubmit.co/kerem@weareoutpost.ca" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">

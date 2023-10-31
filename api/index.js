@@ -15,30 +15,21 @@ app.get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`);
 });
 
-app.get('/api/email/:from/:to/:subject/:body/:attachmentName/:attachmentContent', (req, res) => {  
+app.get('/api/email', (req, res) => {  
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Access-Control-Allow-Origin', '*');
-
-  const { from, to, subject, body, attachmentContent, attachmentName} = req.params;
 
 	// Send an email:
 	var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
 
 	try {
 		client.sendEmail({
-			"From": from,
-			"To": to,
-			"Subject": subject,
-			"HtmlBody": body,
+			"From": "kerem@weareoutpost.ca",
+			"To": "keremduran.fw@gmail.com",
+			"Subject": "Hello from Postmark",
+			"HtmlBody": "<strong>Hello</strong> dear Postmark user.",
 			"TextBody": "Hello from Postmark!",
-			"MessageStream": "outbound",
-			"Attachments": [
-				{
-					"Name": attachmentName,
-					"Content": attachmentContent,
-					"ContentType": "application/octet-stream"
-				}
-			]
+			"MessageStream": "outbound"
 	});
 	} catch (error) {
 		res.end(error);
