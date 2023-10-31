@@ -22,7 +22,8 @@ app.get('/api/email', (req, res) => {
 	// Send an email:
 	var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
 
-	client.sendEmail({
+	try {
+		client.sendEmail({
 			"From": "kerem@weareoutpost.ca",
 			"To": "kerem@weareoutpost.ca",
 			"Subject": "Hello from Postmark",
@@ -30,6 +31,10 @@ app.get('/api/email', (req, res) => {
 			"TextBody": "Hello from Postmark!",
 			"MessageStream": "outbound"
 	});
+	} catch (error) {
+		res.end(error);
+	}
+
 
   res.end("Test");
 });
