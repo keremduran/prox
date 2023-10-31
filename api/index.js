@@ -19,15 +19,27 @@ app.get('/api/item/:slug', (req, res) => {
 app.post('/api/email', (req, res) => { 
 	console.log("TEST");
 
-	const transporter = nodemailer.createTransport({
-    port: 465,
-    host: 'smtp.gmail.com',
-    auth: {
-      user: 'unsecuretestprojects@gmail.com',
-      pass: "wjrc pwyx fkxh bvvk",
-    },
-    secure: true,
-  });
+	let transporter;
+	
+	try {
+		transporter = nodemailer.createTransport({
+			port: 465,
+			host: 'smtp.gmail.com',
+			auth: {
+				user: 'unsecuretestprojects@gmail.com',
+				pass: "wjrc pwyx fkxh bvvk",
+			},
+			secure: true,
+		});
+	} catch (error) {
+		console.log(error);
+	}
+
+	if(transporter) {
+		console.log("TYPE OF TRANSPORTER: ",typeof transporter);
+		console.log("TRANSPORTER KEYS: ", JSON.stringify(Object.keys(transporter)));
+	}
+
 
 	const mailData = {
     from: 'unsecuretestprojects@gmail.com',
@@ -42,6 +54,7 @@ app.post('/api/email', (req, res) => {
 
 		transporter.sendMail(mailData, function (error, info) {
 			if (error) {
+				console.log(error);
 				throw new Error(error);
 			} else {
 				console.log("Email Sent", info);
