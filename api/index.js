@@ -20,29 +20,14 @@ app.get('/api/item/:slug', (req, res) => {
 });
 
 app.post('/api/email', (req, res) => { 
-	// const mailData = {
-  //   from: 'inspiredigital.test@gmail.com',
-  //   to: 'keremduran.fw@gmail.com',
-  //   subject: `Message From ${req.body.name}`,
-  //   html: `<div>${req.body.emailContent}</div><p>Sent from:
-  //   ${req.body.email}</p>`,
-  // };
+	// Send an email:
+	var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
 
-	// // Send an email:
-	// var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
-
-	// try {
-	// 	client.sendEmail({
-	// 		"From": "kerem@weareoutpost.ca",
-	// 		"To": "keremduran.fw@gmail.com",
-	// 		"Subject": "Hello from Postmark",
-	// 		"HtmlBody": "<strong>Hello</strong> dear Postmark user.",
-	// 		"TextBody": "Hello from Postmark!",
-	// 		"MessageStream": "outbound"
-	// });
-	// } catch (error) {
-	// 	res.end(error);
-	// }
+	try {
+		client.sendEmail(req.body);
+	} catch (error) {
+		res.end(error);
+	}
 
   console.log(req.body);
 
