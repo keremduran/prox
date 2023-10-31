@@ -36,7 +36,7 @@ app.post('/api/email', (req, res) => {
 	console.log(JSON.stringify(req.body));
 
 	if(req.body) {
-		res.end(JSON.stringify(req.body));
+		res.end(req.body);
 	}
 	else {
 		res.end("REQ BODY NOT FOUND")

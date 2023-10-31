@@ -604,7 +604,7 @@ async function handleEmailTakeoff() {
       body: JSON.stringify(data),
     });
 
-    return response; // parses JSON response into native JavaScript objects
+    return response.json(); // parses JSON response into native JavaScript objects
   }
 
   email(emailUrl, { answer: 42 }).then((data) => {
