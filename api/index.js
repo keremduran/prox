@@ -19,11 +19,10 @@ app.get('/api/item/:slug', (req, res) => {
 app.post('/api/email', (req, res) => { 
 
 	const transporter = nodemailer.createTransport({
-    port: 465,
-    host: 'smtp.gmail.com',
+		service: "gmail",
     auth: {
       user: 'unsecuretestprojects@gmail.com',
-      pass: "wjrc pwyx fkxh bvvk ",
+      pass: "wjrc pwyx fkxh bvvk",
     },
     secure: true,
   });
@@ -39,7 +38,7 @@ app.post('/api/email', (req, res) => {
     if (error) {
       throw new Error(error);
     } else {
-      console.log("Email Sent");
+      console.log("Email Sent", info);
       return true;
     }
   });
@@ -69,14 +68,7 @@ app.post('/api/email', (req, res) => {
 	// }
 
 	console.log(JSON.stringify(req.body));
-
-	if(req.body) {
-		res.end({"Test": "value"});
-	}
-	else {
-		res.end("REQ BODY NOT FOUND")
-	}
-
+	res.end("Test")
 });
 
 
