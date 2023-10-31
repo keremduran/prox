@@ -564,7 +564,7 @@ async function handleEmailTakeoff() {
 
   const emailButton = document.getElementById('email-button');
 
-  emailButton.click();
+  // emailButton.click();
 
   let emailUrl = "https://prox-virid.vercel.app/api/email";
 
@@ -588,11 +588,32 @@ async function handleEmailTakeoff() {
   // addParam("my-pdf.pdf");
   // addParam(pdf);
 
+  async function email(url = "", data = {}) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(data),
+    });
+    return response.json(); // parses JSON response into native JavaScript objects
+  }
+
+  email("https://prox-virid.vercel.app/api/email", { answer: 42 }).then((data) => {
+    console.log(data); // JSON data parsed by `data.json()` call
+  });
+
   try {
     //@ts-ignore
     const emailResponse = await fetch(emailUrl);
     console.log({emailResponse});
-    
   } catch (error) {
     console.log(error);
   }
