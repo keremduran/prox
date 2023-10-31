@@ -35,7 +35,7 @@ app.post('/api/email', (req, res) => {
     html: `<div>Test</div><p>Sent from:test</p>`,
   };
 
-	transporter.sendMail(mailOptions, function (error, info) {
+	transporter.sendMail(mailData, function (error, info) {
     if (error) {
       throw new Error(error);
     } else {
