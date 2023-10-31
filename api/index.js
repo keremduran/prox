@@ -16,7 +16,7 @@ app.get('/api/item/:slug', (req, res) => {
 });
 
 app.post('/api/email', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.end(JSON.stringify(req));
 });
 
