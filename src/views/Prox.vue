@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, computed, watchEffect} from 'vue'
+
+import { reactive, computed, watchEffect, onMounted} from 'vue'
 import { mdiTableBorder,mdiViewDashboard, mdiShoppingSearch, mdiListBoxOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
 import TableMaterials from '@/components/TableMaterials.vue'
@@ -16,433 +17,79 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 
 import html2pdf from 'html2pdf.js';
 
-import {getMaterials, addMaterial} from '../firebase'
+import {getMaterials, addProject, getProjects} from '../firebase'
+import axios from 'axios'
 
 //@ts-ignore
 let materials = await getMaterials();
 
-// const materials = firebaseMaterials;
-//import emailjs from '@emailjs/browser';
-// public key: rTC3ppKoqqlH4BawQ
-// service id: service_phkwzcn
+//@ts-ignore
+let projects = await getProjects();
+// const projects = [
+// 	{
+// 		"id": "project1",
+// 		"contractor": "Habitat Solutions",
+// 		"builder": "Atha Construction",
+// 		"site": "Cambridge",
+// 		"address": "27 Cambridge St",
+// 		"contact": "Rodrigo",
+// 		"mobile": "(647) 227-4546",
+// 		"timesheetEmail": "luane@habitatsolutions.ca"
+// 	},
+// 	{
+// 		"id": "project2",
+// 		"contractor": "ProX",
+// 		"builder": "Amigoes",
+// 		"site": "Concord",
+// 		"address": "",
+// 		"contact": "",
+// 		"mobile": "",
+// 		"timesheetEmail": "leonardorbc@gmail.com"
+// 	},
+// 	{
+// 		"id": "project3",
+// 		"contractor": "Marel Contractors",
+// 		"builder": "Remington",
+// 		"site": "Brampton",
+// 		"address": "Inspire Blvd",
+// 		"contact": "Daven",
+// 		"mobile": "(647) 244-6436",
+// 		"timesheetEmail": "dvitti@marelcontractors.com"
+// 	},
+// 	{
+// 		"id": "project4",
+// 		"contractor": "Marel Contractors",
+// 		"builder": "Aspenridge",
+// 		"site": "Brampton",
+// 		"address": "Inspire Blvd",
+// 		"contact": "Daven",
+// 		"mobile": "(647) 244-6436",
+// 		"timesheetEmail": "dvitti@marelcontractors.com"
+// 	},
+// 	{
+// 		"id": "project5",
+// 		"contractor": "Marel Contractors",
+// 		"builder": "Countrywide",
+// 		"site": "Caledon",
+// 		"address": "8 Ann Mckee St",
+// 		"contact": "Daven",
+// 		"mobile": "(647) 244-6436",
+// 		"timesheetEmail": "dvitti@marelcontractors.com"
+// 	},
+// 	{
+// 		"id": "project6",
+// 		"contractor": "Marel Contractors",
+// 		"builder": "Mattamy",
+// 		"site": "Mississauga",
+// 		"address": "5150 Ninth Line",
+// 		"contact": "Daven",
+// 		"mobile": "(647) 244-6436",
+// 		"timesheetEmail": "dvitti@marelcontractors.com"
+// 	}
+// ]
 
-// console.log(emailjs)
-//emailjs.send();
-
-const materials1 = [
-    {
-      "id": "material1",
-      "name": "Insulation",
-      "type": "R12",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "8'",
-      "floor": "Garage",
-      "sqft": "",
-      "workType": "Prep"
-    },
-    {
-      "id": "material2",
-      "name": "Insulation",
-      "type": "R14",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "9'",
-      "floor": "Basement",
-      "sqft": "",
-      "workType": "Garage"
-    },
-    {
-      "id": "material3",
-      "name": "Insulation",
-      "type": "R20",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "10'",
-      "floor": "Main Floor",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material4",
-      "name": "Insulation",
-      "type": "R22",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "11'",
-      "floor": "Ground Floor",
-      "sqft": "49",
-      "workType": ""
-    },
-    {
-      "id": "material5",
-      "name": "Insulation",
-      "type": "R24",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "12'",
-      "floor": "1st Floor",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material6",
-      "name": "Insulation",
-      "type": "R28",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "2nd Floor",
-      "sqft": "20",
-      "workType": ""
-    },
-    {
-      "id": "material7",
-      "name": "Insulation",
-      "type": "R31",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "3rd Floor",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material8",
-      "name": "Insulation",
-      "type": "R40",
-      "dimension": "16",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "4th Floor",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material9",
-      "name": "Insulation",
-      "type": "R12",
-      "dimension": "24",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material10",
-      "name": "Insulation",
-      "type": "R20",
-      "dimension": "24",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material11",
-      "name": "Insulation",
-      "type": "R22",
-      "dimension": "24",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material12",
-      "name": "Insulation",
-      "type": "R28",
-      "dimension": "24",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material13",
-      "name": "Insulation",
-      "type": "R31",
-      "dimension": "24",
-      "grade": "Rockwool",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material14",
-      "name": "Drywall",
-      "type": "8'",
-      "dimension": "1/2",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "32",
-      "workType": ""
-    },
-    {
-      "id": "material15",
-      "name": "Drywall",
-      "type": "8'",
-      "dimension": "5/8",
-      "grade": "Firetape",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material16",
-      "name": "Drywall",
-      "type": "9'",
-      "dimension": "1/2",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "36",
-      "workType": ""
-    },
-    {
-      "id": "material17",
-      "name": "Drywall",
-      "type": "9'",
-      "dimension": "5/8",
-      "grade": "Firetape",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material18",
-      "name": "Drywall",
-      "type": "10'",
-      "dimension": "1/2",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "40",
-      "workType": ""
-    },
-    {
-      "id": "material19",
-      "name": "Drywall",
-      "type": "10'",
-      "dimension": "5/8",
-      "grade": "Firetape",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material20",
-      "name": "Drywall",
-      "type": "12'",
-      "dimension": "1/2",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "48",
-      "workType": ""
-    },
-    {
-      "id": "material21",
-      "name": "Drywall",
-      "type": "12'",
-      "dimension": "5/8",
-      "grade": "Firetape",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material22",
-      "name": "Resilient Channel",
-      "type": "",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material23",
-      "name": "Gable",
-      "type": "",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material24",
-      "name": "Beam pocket",
-      "type": "",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material25",
-      "name": "Hour",
-      "type": "",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material26",
-      "name": "Premium",
-      "type": "Townhouse",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material27",
-      "name": "Premium",
-      "type": "Stack Townhouse",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material28",
-      "name": "Premium",
-      "type": "Energy Start",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material29",
-      "name": "Difficulty",
-      "type": "Easy",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material30",
-      "name": "Difficulty",
-      "type": "Medium",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    },
-    {
-      "id": "material31",
-      "name": "Difficulty",
-      "type": "Hard",
-      "dimension": "",
-      "grade": "",
-      "height": "",
-      "floor": "",
-      "sqft": "",
-      "workType": ""
-    }
-]
-
-// materials1.forEach(m => {
-//   const {id, ...material} = m;
-//   addMaterial(material);
-// })
-
-
-// const materials = materialsRef;
-
-const projects = [
-	{
-		"id": "project1",
-		"contractor": "Habitat Solutions",
-		"builder": "Atha Construction",
-		"site": "Cambridge",
-		"address": "27 Cambridge St",
-		"contact": "Rodrigo",
-		"mobile": "(647) 227-4546",
-		"Timesheet Email": "luane@habitatsolutions.ca"
-	},
-	{
-		"id": "project2",
-		"contractor": "ProX",
-		"builder": "Amigoes",
-		"site": "Concord",
-		"address": "",
-		"contact": "",
-		"mobile": "",
-		"Timesheet Email": "leonardorbc@gmail.com"
-	},
-	{
-		"id": "project3",
-		"contractor": "Marel Contractors",
-		"builder": "Remington",
-		"site": "Brampton",
-		"address": "Inspire Blvd",
-		"contact": "Daven",
-		"mobile": "(647) 244-6436",
-		"Timesheet Email": "dvitti@marelcontractors.com"
-	},
-	{
-		"id": "project4",
-		"contractor": "Marel Contractors",
-		"builder": "Aspenridge",
-		"site": "Brampton",
-		"address": "Inspire Blvd",
-		"contact": "Daven",
-		"mobile": "(647) 244-6436",
-		"Timesheet Email": "dvitti@marelcontractors.com"
-	},
-	{
-		"id": "project5",
-		"contractor": "Marel Contractors",
-		"builder": "Countrywide",
-		"site": "Caledon",
-		"address": "8 Ann Mckee St",
-		"contact": "Daven",
-		"mobile": "(647) 244-6436",
-		"Timesheet Email": "dvitti@marelcontractors.com"
-	},
-	{
-		"id": "project6",
-		"contractor": "Marel Contractors",
-		"builder": "Mattamy",
-		"site": "Mississauga",
-		"address": "5150 Ninth Line",
-		"contact": "Daven",
-		"mobile": "(647) 244-6436",
-		"Timesheet Email": "dvitti@marelcontractors.com"
-	}
-]
+// KT for Leo
+//projects.forEach(addProject);
 
 const rates = [
   {
@@ -585,84 +232,173 @@ const rates = [
 
 const documentDate = () => new Date(Date.now()).toLocaleDateString();
 const documentNo = () => Date.now().toString(36);
-const currentURL = () => window.location.pathname
+const currentURL = () => window.location.pathname;
 
-const projectFilters = reactive({
-	"contractor": "",
-	"builder": "",
-	"site": "",
-	"address": "",
-	"contact": "",
-	"mobile": "",
-	"Timesheet Email": ""
-});
+function getProjectOptions(field: string){
+  let filteredProjects = [];
+  console.log("GETTING PROJECT OPTIONS FOR: ", field);
+  
+	const filterIndex = Object.keys(projectFilterNames).indexOf(field);
 
-const materialFilterNames = reactive({
-	"name": "",
-	"type": "",
-	"dimension": "",
-	"grade": "",
-	"height": "",
-	"floor": "",
-	"sqft": "",
-	"workType": ""
-});
+	if(filterIndex === 0) {
+    filteredProjects = projects;
+  }
+	else {
+		// Apply all the filters that come before it.
+    filteredProjects = projects.filter(project => {
+      return Object.keys(projectFilterNames).every((filter) => {
+        //if(index < filterIndex) return false;
 
-let filteredProjects = computed(() => {
-	return projects.filter(project => {
-		
-		return Object.keys(projectFilters).every(filter => {
-			const selectedValue = projectFilters[filter].label;
+        const selectedValue = projectFilterNames[filter].label;
 
-			// Stop condition
-			if (selectedValue && selectedValue !== project[filter]) {
-				return false;
-			}
-
-			return true;
-		})
-	});
-});
-
-const getContractorOptions = (field = 'contractor') => {
-	const options: any[] = [];
-	const foundLabels: string[] = [];
-
-	projects.forEach(project => {
-		const label = project[field];
-		if (label.length > 0 && !foundLabels.find(l => l === label)) {
-			foundLabels.push(label);
-			options.push({ id: project.id, label: label })
-		}
-	})
-
-	if(options.length === 1) projectFilters[field] = options[0]
-
-	return options;
-}
-
-const getProjectOptions = (field: string) => {
+        // Stop condition
+        if (selectedValue && selectedValue !== project[filter]) {
+          return false;
+        }
+        return true;
+      })
+    });
+	};
+  
+  // Projects have been filtered. Setting options setting options
 	const options: any[] = [];
 	const foundLabels: string[] = [];
 
 	// only get filtered elements for previous selections
-	filteredProjects.value.forEach(project => {
+	filteredProjects.forEach(project => {
 		const label = project[field];
-		if (label.length > 0 && !foundLabels.find(l => l === label)) {
+		// filter out duplicates and empty values
+		if (label?.length > 0 && !foundLabels.find(l => l === label)) {
 			foundLabels.push(label);
-			options.push({ id: project.id, label: label })
+			options.push(label.toString())
 		}
 	})
 
 	return options;
 }
+
+function handleResetProject() {
+	Object.keys(projectFilters).forEach((f, i) => {
+		if(i === 0) {
+			projectFilters[f].value = ""
+			return;
+		}
+		projectFilters[f] = {value: "", options: []}
+	});
+}
+
+const projectFilterNames = [
+  "contractor",
+  "builder",
+  "site",
+  "address",
+  "contact",
+  "mobile",
+  "timesheetEmail"
+]
+
+const projectFilters = reactive({
+	"contractor": {value: "", options: getProjectOptions("contractor")},
+	"builder": {value: "", options: []},
+	"site": {value: "", options: []},
+	"address": {value: "", options: []},
+	"contact": {value: "", options: []},
+	"mobile": {value: "", options: []},
+	"timesheetEmail": {value: "", options: []}
+});
+
+
+// Purpose: there are 8 dropdown fields, each filters the json data
+// Initial State: Material field has options because it's the first one (All the unique non-empty column values) No other options have values
+// User follows the following steps
+// 1. Select Material
+// Filters json data based on material and Sets the options for the next field which is rate/len (All the unique non-empty column values)
+// 2. Select Rate/Len
+// Filters json data (adds the filter on top of the previously filtered json) based on rate/len Sets the options for the next field which is dimension (All the unique non-empty column values)
+// 3. repeats until the end (careful with the last select)
+// Note: if user changes for example RateLen after setting multiple, every select field in front of it will be reset 
+function getProjectOptionsByIndex(filterIndex: number) {
+	let options = [];
+
+	const nextFilterName = projectFilterNames[filterIndex + 1];
+  
+	projects.forEach(project => {
+		let accept = true;
+
+		Object.keys(project).forEach(key => {
+			if (
+				projectFilters[key]?.value && 
+				projectFilters[key].value !== project[key]
+			) {				
+				accept = false;
+				return;
+			}
+		})
+
+		const newOption = project[nextFilterName]?.toString();
+
+		// filter-out duplicates and empty values
+		accept = accept && newOption?.length > 0 && options.indexOf(newOption) === -1;
+
+		if(accept){
+			options.push(project[nextFilterName]);
+		}
+	});
+
+	return options;
+}
+
+
+// handleClick and reset everything in-front of the current field
+function handleSelectProject(filterName: string) {
+
+	const filterIndex = projectFilterNames.indexOf(filterName);
+
+  // Last index
+  if(filterIndex === projectFilterNames.length - 1) {
+    return;
+  }
+
+	// Reset forward to ensure consistency (we cannot use the generic reset method)
+	for (let i = filterIndex + 1; i < projectFilterNames.length; i++) {
+		const nextFilterName = projectFilterNames[i];
+		projectFilters[nextFilterName].value = "";
+		projectFilters[nextFilterName].options = [];
+	}
+
+	const nextFilterName = projectFilterNames[filterIndex + 1];
+	const nextFilter = projectFilters[nextFilterName];
+
+	let options = getProjectOptionsByIndex(filterIndex);
+
+	nextFilter.options = options;
+
+	if(options.length === 1) {
+		nextFilter.value = options[0];
+	}
+
+	if(options.length === 0 || options.length === 1) {
+		handleSelectProject(nextFilterName);
+	}
+
+}
+
+// function handleAddProject() { 
+// 	const projectObject = {};
+
+// 	for (let key of Object.keys(materialFilters)){ 
+// 		projectObject[key] = projectFilters[key].value; 
+// 	}
+	
+// 	projectControls.selectedProjects.push(projectObject); 
+// }
+
+//Project Section Ends
 
 /**
  * Todo: New filtering system
  * purpose: dont' let filters apply the filter on themselves
  */
-
-
 const getMaterialOptions = (field: string) => {
 	const options: any[] = [];
 	const foundLabels: string[] = [];
@@ -707,37 +443,12 @@ const getMaterialOptions = (field: string) => {
 	return options;
 }
 
-watchEffect(() => {
-  // Loop through all the fields
-  Object.keys(projectFilters).forEach(field => {
-    // Get the options for each field
-    const options = field === 'contractor' ? getContractorOptions() : getProjectOptions(field)
-    // If there is only one option, assign it to projectFilters
-    if (options.length === 1) {
-      projectFilters[field] = options[0];
-    }
-  })
-})
-
-const submit = () => {
-	//
-}
-
-// handleClick and reset everything in-front of the current field
-function handleSelectProject(key: string) {
-	let forward = false;
-	Object.keys(projectFilters).forEach(filter => {
-		if(forward) {
-			projectFilters[filter] = "";
-		}
-
-		if(filter === key) forward = true;
-	})
-}
-
-function handleResetProject() {
-	Object.keys(projectFilters).forEach(f => projectFilters[f] = "");
-}
+const materialControls = reactive({
+	"quantity": 1,
+	"rate": 0,
+	"selectedMaterials": [],
+  "takeoffPdf": undefined
+});
 
 function handleResetMaterial() {
 	Object.keys(materialFilters).forEach((f, i) => {
@@ -749,6 +460,17 @@ function handleResetMaterial() {
 	});
 }
 
+const materialFilterNames = reactive({
+	"name": "",
+	"type": "",
+	"dimension": "",
+	"grade": "",
+	"height": "",
+	"floor": "",
+	"sqft": "",
+	"workType": ""
+});
+
 const materialFilters = reactive({
 	"name": {value: "", options: getMaterialOptions("name")},
 	"type": {value: "", options: []},
@@ -758,13 +480,6 @@ const materialFilters = reactive({
 	"floor": {value: "", options: []},
 	"sqft": {value: "", options: []},
 	"workType": {value: "", options: []}
-});
-
-const materialControls = reactive({
-	"quantity": 1,
-	"rate": 0,
-	"selectedMaterials": [],
-  "takeoffPdf": undefined
 });
 
 // Purpose: there are 8 dropdown fields, each filters the json data
@@ -946,6 +661,12 @@ const total = computed(() => {
   return sum.toFixed(2);
 });
 
+
+const submit = () => {
+	//
+}
+
+
 </script>
 
 <template>
@@ -966,21 +687,14 @@ const total = computed(() => {
 			<SectionTitleLineWithButton :icon="mdiViewDashboard" title="Select Project" />
 			<CardBox form @submit.prevent="submit">
         <div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-2">
-            <FormField label="CONTRACTOR">
-              <FormControl 
-                v-model="projectFilters['contractor']" 
-                :options="getContractorOptions()"
-                @change="handleSelectProject('contractor')"
-              />
-            </FormField>
+          <div class="flex flex-wrap gap-4 p-2 pt-4">
             <FormField
               :label="key.toUpperCase()"
-              v-for="key in Object.keys(projectFilters).filter(p => p !== 'contractor')"
+              v-for="key in Object.keys(projectFilters)"
             >
               <FormControl 
-                v-model="projectFilters[key]" 
-                :options="getProjectOptions(key)" 
+                v-model="projectFilters[key].value" 
+                :options="projectFilters[key].options" 
                 @change="handleSelectProject(key)"
               />
             </FormField>
@@ -994,7 +708,7 @@ const total = computed(() => {
 			<SectionTitleLineWithButton :icon="mdiShoppingSearch" title="Select Material" />
 			<CardBox form @submit.prevent="submit">
 				<div class="overflow-x-scroll p-2">
-          <div class="w-max flex flex-row gap-4">
+          <div class="flex flex-wrap gap-4 p-2 pt-4">
             <FormField
               :label="key.toUpperCase()"
               v-for="key in Object.keys(materialFilters)"
@@ -1007,7 +721,7 @@ const total = computed(() => {
             </FormField>
           </div>
 				</div>
-				<div class="w-max flex flex-row gap-4 p-2">
+				<div class="flex flex-wrap gap-4 p-2 pt-4">
 					<FormField label="QUANTITY">
 						<input 
 							class="w-full"
@@ -1079,13 +793,6 @@ const total = computed(() => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <h1>TEST</h1>
-      <ul>
-        <li v-for="m in materials" :key="m.name">
-          <span v-for="k in Object.keys(m)">{{ m[k] }}&nbsp;</span>
-        </li>
-
-      </ul>
       <form class="hidden" id="email-form" action="https://formsubmit.co/kerem@weareoutpost.ca" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
@@ -1118,29 +825,29 @@ const total = computed(() => {
             <div class="w-[15rem]">
               <div class="flex justify-between">
                 <div>Contractor: </div>
-                <div>{{projectFilters.contractor?.label}}</div>
+                <div>{{projectFilters.contractor}}</div>
               </div>
               <div class="flex justify-between">
                 <div>Builder: </div>
-                <div>{{projectFilters.builder?.label}}</div>
+                <div>{{projectFilters.builder}}</div>
               </div>
               <div class="flex justify-between">
                 <div>Site: </div>
-                <div>{{projectFilters.site?.label}}</div>
+                <div>{{projectFilters.site}}</div>
               </div>
             </div>
             <div class="w-[15rem]">
               <div class="flex justify-between">
                 <div>Address: </div>
-                <div>{{projectFilters.address?.label}}</div>
+                <div>{{projectFilters.address}}</div>
               </div>
               <div class="flex justify-between">
                 <div>Contact: </div>
-                <div>{{projectFilters.contact?.label}}</div>
+                <div>{{projectFilters.contact}}</div>
               </div>
               <div class="flex justify-between">
                 <div>Email: </div>
-                <div>{{ projectFilters["Timesheet Email"]?.label }}</div>
+                <div>{{ projectFilters["timesheetEmail"]}}</div>
               </div>
             </div>
           </div>
@@ -1171,8 +878,6 @@ const total = computed(() => {
             </div>
           </div>
           <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info"></div>
-
-  
         </div>
       </div>
 		</SectionMain>

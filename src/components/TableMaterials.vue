@@ -105,7 +105,16 @@ const checked = (isChecked, material) => {
     <tbody>
       <tr v-for = "(material, index) in materials">
         <TableCheckboxCell v-if="checkable" @checked="checked($event, index)" />
-        <td v-for="field in Object.keys(material)">{{material[field]}}</td>
+        <td v-for="field in Object.keys(material)">
+          <div class="flex justify-between w-full">
+            <div class="lg:invisible font-bold uppercase">
+              {{field}}
+            </div>
+            <div>
+              {{material[field]}}
+            </div>
+          </div>
+        </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
             <BaseButton color="info" :icon="mdiPen" small @click="isModalActive = true" />

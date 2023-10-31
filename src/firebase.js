@@ -19,11 +19,21 @@ export const db = getFirestore(firebaseApp);
 export const materialsRef = collection(db, "materials");
 
 export const getMaterials = async () => {
+	console.log("fetching materials...");
 	const querySnapshot = await getDocs(collection(db, "materials"));
 	const materials = [];
 	querySnapshot.forEach((doc) => {
-		// doc.data() is never undefined for query doc snapshots
-		console.log(doc.id, " => ", doc.data());
+		materials.push(doc.data());
+	});
+
+	return materials;
+}
+
+export const getProjects = async () => {
+	console.log("fetching projects...");
+	const querySnapshot = await getDocs(collection(db, "projects"));
+	const materials = [];
+	querySnapshot.forEach((doc) => {
 		materials.push(doc.data());
 	});
 
@@ -32,4 +42,8 @@ export const getMaterials = async () => {
 
 export const addMaterial = async (material) => {
 	return await addDoc(collection(db, "materials"), material);
+}
+
+export const addProject = async (project) => {
+	return await addDoc(collection(db, "projects"), project);
 }
