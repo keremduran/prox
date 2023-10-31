@@ -1,6 +1,7 @@
 const app = require('express')();
 const { v4 } = require('uuid');
 var postmark = require("postmark");
+let nodemailer = require('nodemailer');
 
 app.get('/api', (req, res) => {
   const path = `/api/item/${v4()}`;
@@ -16,6 +17,40 @@ app.get('/api/item/:slug', (req, res) => {
 });
 
 app.post('/api/email', (req, res) => { 
+
+	const transporter = nodemailer.createTransport({
+    port: 465,
+    host: 'smtp.gmail.com',
+    auth: {
+      user: 'unsecuretestprojects@gmail.com',
+      pass: "wjrc pwyx fkxh bvvk ",
+    },
+    secure: true,
+  });
+
+	const mailData = {
+    from: 'unsecuretestprojects@gmail.com',
+    to: 'keremduran.fw@gmail.com',
+    subject: `Message From`,
+    html: `<div>Test</div><p>Sent from:test</p>`,
+  };
+
+	transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      throw new Error(error);
+    } else {
+      console.log("Email Sent");
+      return true;
+    }
+  });
+
+	// const mailData = {
+  //   from: 'inspiredigital.test@gmail.com',
+  //   to: 'keremduran.fw@gmail.com',
+  //   subject: `Message From ${req.body.name}`,
+  //   html: `<div>${req.body.emailContent}</div><p>Sent from:
+  //   ${req.body.email}</p>`,
+  // };
 
 	// // Send an email:
 	// var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
@@ -36,7 +71,7 @@ app.post('/api/email', (req, res) => {
 	console.log(JSON.stringify(req.body));
 
 	if(req.body) {
-		res.end(req.body);
+		res.end({"Test": "value"});
 	}
 	else {
 		res.end("REQ BODY NOT FOUND")
