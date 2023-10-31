@@ -25,7 +25,7 @@ app.get('/api/email', (req, res) => {
 	try {
 		client.sendEmail({
 			"From": "kerem@weareoutpost.ca",
-			"To": "kerem@weareoutpost.ca",
+			"To": "keremduran.fw@gmail.com",
 			"Subject": "Hello from Postmark",
 			"HtmlBody": "<strong>Hello</strong> dear Postmark user.",
 			"TextBody": "Hello from Postmark!",
@@ -34,7 +34,6 @@ app.get('/api/email', (req, res) => {
 	} catch (error) {
 		res.end(error);
 	}
-
 
   res.end("Test");
 });
