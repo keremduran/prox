@@ -348,7 +348,6 @@ function getProjectOptionsByIndex(filterIndex: number) {
 	return options;
 }
 
-
 // handleClick and reset everything in-front of the current field
 function handleSelectProject(filterName: string) {
 

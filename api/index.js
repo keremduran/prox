@@ -15,9 +15,10 @@ app.get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`);
 });
 
-app.post('/api/email', (req, res) => {
+app.post('/api/email', (req, res) => {  
+  res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.end(JSON.stringify(req));
+  res.end({test: "test"});
 });
 
 
