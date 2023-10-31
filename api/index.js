@@ -15,9 +15,7 @@ app.get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`);
 });
 
-app.post('/api/email', (req, res) => {  
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+app.post('/api/email', (req, res) => { 
 
 	// // Send an email:
 	// var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
@@ -34,6 +32,8 @@ app.post('/api/email', (req, res) => {
 	// } catch (error) {
 	// 	res.end(error);
 	// }
+
+	console.log(JSON.stringify(req.body));
 
 	if(req.body) {
 		res.end(JSON.stringify(req.body));

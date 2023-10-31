@@ -603,20 +603,21 @@ async function handleEmailTakeoff() {
       referrerPolicy: "no-referrer",
       body: JSON.stringify(data),
     });
-    return response.json(); // parses JSON response into native JavaScript objects
+
+    return response; // parses JSON response into native JavaScript objects
   }
 
-  email("https://prox-virid.vercel.app/api/email", { answer: 42 }).then((data) => {
+  email(emailUrl, { answer: 42 }).then((data) => {
     console.log(data); // JSON data parsed by `data.json()` call
   });
 
-  try {
-    //@ts-ignore
-    const emailResponse = await fetch(emailUrl);
-    console.log({emailResponse});
-  } catch (error) {
-    console.log(error);
-  }
+  // try {
+  //   //@ts-ignore
+  //   const emailResponse = await fetch(emailUrl);
+  //   console.log({emailResponse});
+  // } catch (error) {
+  //   console.log(error);
+  // }
 
   // try {
   //   emailjs.send("service_phkwzcn","template_pz23olr",{
