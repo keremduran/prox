@@ -36,15 +36,24 @@ app.post('/api/email', (req, res) => {
     html: `<div>Test</div><p>Sent from:test</p>`,
   };
 
-	transporter.sendMail(mailData, function (error, info) {
+	try {
+
 		console.log("MAIL SENDING!");
-    if (error) {
-      throw new Error(error);
-    } else {
-      console.log("Email Sent", info);
-      return true;
-    }
-  });
+
+		transporter.sendMail(mailData, function (error, info) {
+			if (error) {
+				throw new Error(error);
+			} else {
+				console.log("Email Sent", info);
+				return true;
+			}
+		});
+	} catch (error) {
+		console.log(error)
+	}
+
+
+
 
 	// const mailData = {
   //   from: 'inspiredigital.test@gmail.com',
