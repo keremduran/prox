@@ -18,78 +18,14 @@ import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.
 import html2pdf from 'html2pdf.js';
 
 import {getMaterials, addProject, getProjects} from '../firebase'
-import axios from 'axios'
 
 //@ts-ignore
 let materials = await getMaterials();
 
 //@ts-ignore
 let projects = await getProjects();
-// const projects = [
-// 	{
-// 		"id": "project1",
-// 		"contractor": "Habitat Solutions",
-// 		"builder": "Atha Construction",
-// 		"site": "Cambridge",
-// 		"address": "27 Cambridge St",
-// 		"contact": "Rodrigo",
-// 		"mobile": "(647) 227-4546",
-// 		"timesheetEmail": "luane@habitatsolutions.ca"
-// 	},
-// 	{
-// 		"id": "project2",
-// 		"contractor": "ProX",
-// 		"builder": "Amigoes",
-// 		"site": "Concord",
-// 		"address": "",
-// 		"contact": "",
-// 		"mobile": "",
-// 		"timesheetEmail": "leonardorbc@gmail.com"
-// 	},
-// 	{
-// 		"id": "project3",
-// 		"contractor": "Marel Contractors",
-// 		"builder": "Remington",
-// 		"site": "Brampton",
-// 		"address": "Inspire Blvd",
-// 		"contact": "Daven",
-// 		"mobile": "(647) 244-6436",
-// 		"timesheetEmail": "dvitti@marelcontractors.com"
-// 	},
-// 	{
-// 		"id": "project4",
-// 		"contractor": "Marel Contractors",
-// 		"builder": "Aspenridge",
-// 		"site": "Brampton",
-// 		"address": "Inspire Blvd",
-// 		"contact": "Daven",
-// 		"mobile": "(647) 244-6436",
-// 		"timesheetEmail": "dvitti@marelcontractors.com"
-// 	},
-// 	{
-// 		"id": "project5",
-// 		"contractor": "Marel Contractors",
-// 		"builder": "Countrywide",
-// 		"site": "Caledon",
-// 		"address": "8 Ann Mckee St",
-// 		"contact": "Daven",
-// 		"mobile": "(647) 244-6436",
-// 		"timesheetEmail": "dvitti@marelcontractors.com"
-// 	},
-// 	{
-// 		"id": "project6",
-// 		"contractor": "Marel Contractors",
-// 		"builder": "Mattamy",
-// 		"site": "Mississauga",
-// 		"address": "5150 Ninth Line",
-// 		"contact": "Daven",
-// 		"mobile": "(647) 244-6436",
-// 		"timesheetEmail": "dvitti@marelcontractors.com"
-// 	}
-// ]
 
-// KT for Leo
-//projects.forEach(addProject);
+fetch("https://prox-virid.vercel.app/api/email", {method: "POST"});
 
 const rates = [
   {
