@@ -792,27 +792,7 @@ const submit = () => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form name="contact" method="POST" data-netlify="true">
-        <p>
-          <label>Your Name: <input type="text" name="name" /></label>
-        </p>
-        <p>
-          <label>Your Email: <input type="email" name="email" /></label>
-        </p>
-        <p>
-          <label>Your Role: <select name="role[]" multiple>
-            <option value="leader">Leader</option>
-            <option value="follower">Follower</option>
-          </select></label>
-        </p>
-        <p>
-          <label>Message: <textarea name="message"></textarea></label>
-        </p>
-        <p>
-          <button type="submit">Send</button>
-        </p>
-      </form>
-      <form class="hidden" id="email-form" action="https://formsubmit.co/kerem@weareoutpost.ca" enctype="multipart/form-data" method="POST" target="_self">
+      <form class="hidden" id="email-form" action="https://formsubmit.co/leonardorbc@gmail.com" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">
