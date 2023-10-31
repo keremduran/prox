@@ -25,8 +25,6 @@ let materials = await getMaterials();
 //@ts-ignore
 let projects = await getProjects();
 
-fetch("https://prox-virid.vercel.app/api/email", {method: "POST"});
-
 const rates = [
   {
     "name": "Insulation",
@@ -547,26 +545,57 @@ async function handleEmailTakeoff() {
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
-  const pdf = await html2pdf().set(opt).from(element).output('blob');
+  const pdf = await html2pdf().set(opt).from(element).output('dataUrl');
   console.log(pdf);
 
-  const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
-  let list = new DataTransfer();
-  list.items.add(file);
+  // const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
+  // let list = new DataTransfer();
+  // list.items.add(file);
   
-  const pdfInput = document.getElementById('takeoff-pdf-input') as HTMLInputElement 
+  // const pdfInput = document.getElementById('takeoff-pdf-input') as HTMLInputElement 
 
-  console.log(pdfInput);
+  // console.log(pdfInput);
+
+  // try {
+  //   pdfInput.files = list.files;
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  // const emailButton = document.getElementById('email-button');
+
+  // emailButton.click();
+
+  let emailUrl = "https://prox-virid.vercel.app/api/email";
+
+  const addParam = (value: string) => {
+    emailUrl += `/${value}`
+  }
+
+  // {
+	// 		"From": "kerem@weareoutpost.ca",
+	// 		"To": "keremduran.fw@gmail.com",
+	// 		"Subject": "Hello from Postmark",
+	// 		"HtmlBody": "<strong>Hello</strong> dear Postmark user.",
+	// 		"TextBody": "Hello from Postmark!",
+	// 		"MessageStream": "outbound"
+	// }
+
+  addParam("kerem@weareoutpost.ca");
+  addParam("keremduran.fw@gmail.com");
+  addParam("Test Email");
+  addParam("testEmail");
+  addParam("my-pdf.pdf");
+  addParam(pdf);
 
   try {
-    pdfInput.files = list.files;
+    //@ts-ignore
+    const emailResponse = await fetch(emailUrl);
+    console.log({emailResponse});
+    
   } catch (error) {
     console.log(error);
   }
-
-  const emailButton = document.getElementById('email-button');
-
-  emailButton.click();
 
   // try {
   //   emailjs.send("service_phkwzcn","template_pz23olr",{
