@@ -17,6 +17,7 @@ app.get('/api/item/:slug', (req, res) => {
 });
 
 app.post('/api/email', (req, res) => { 
+	console.log("TEST");
 
 	const transporter = nodemailer.createTransport({
     port: 465,
@@ -36,6 +37,7 @@ app.post('/api/email', (req, res) => {
   };
 
 	transporter.sendMail(mailData, function (error, info) {
+		console.log("MAIL SENDING!");
     if (error) {
       throw new Error(error);
     } else {
