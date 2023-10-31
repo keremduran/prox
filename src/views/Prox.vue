@@ -545,7 +545,7 @@ async function handleEmailTakeoff() {
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
-  const pdf = await html2pdf().set(opt).from(element).output('dataUrl');
+  const pdf = await html2pdf().set(opt).from(element).output('dataurlstring');
   console.log(pdf);
 
   // const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
@@ -580,6 +580,8 @@ async function handleEmailTakeoff() {
 	// 		"TextBody": "Hello from Postmark!",
 	// 		"MessageStream": "outbound"
 	// }
+
+  fetch('https://prox-virid.vercel.app/api/email/kerem@weareoutpost.ca/keremduran.fw@gmail.com/Test/TestBody/TestAttachment/' + pdf)
 
   addParam("kerem@weareoutpost.ca");
   addParam("keremduran.fw@gmail.com");

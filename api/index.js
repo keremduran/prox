@@ -15,11 +15,11 @@ app.get('/api/item/:slug', (req, res) => {
   res.end(`Item: ${slug}`);
 });
 
-app.get('/api/email/:from/:to/:subject/:body/:attachmentContent/:attachmentName/:attachmentType', (req, res) => {  
+app.get('/api/email/:from/:to/:subject/:body/:attachmentName/:attachmentContent', (req, res) => {  
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const { from, to, subject, body, attachmentContent, attachmentName, attachmentType } = req.params;
+  const { from, to, subject, body, attachmentContent, attachmentName} = req.params;
 
 	// Send an email:
 	var client = new postmark.ServerClient("3dbab09c-f2a1-44e5-8fa2-14c3a9a66b33");
