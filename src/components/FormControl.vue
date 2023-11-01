@@ -140,7 +140,7 @@ if (props.ctrlKFocus) {
       :required="options.length !== 0"
     >
       <option 
-        v-for="option in options" 
+        v-for="option in options?.sort()" 
         :key="option.id ?? option" 
         :value="option"
         >
