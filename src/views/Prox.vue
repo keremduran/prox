@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { reactive, computed, watchEffect, onMounted} from 'vue'
+import { reactive, computed, watchEffect, onMounted, ref} from 'vue'
 import { mdiTableBorder,mdiViewDashboard, mdiShoppingSearch, mdiListBoxOutline } from '@mdi/js'
 import NotificationBar from '@/components/NotificationBar.vue'
 import TableMaterials from '@/components/TableMaterials.vue'
@@ -166,7 +166,9 @@ const rates = [
 
 const documentDate = () => new Date(Date.now()).toLocaleDateString();
 const documentNo = () => Date.now().toString(36);
-const currentURL = () => window.location.pathname;
+const currentURL = () => {
+  return window.location.href
+};
 
 function getProjectOptions(field: string){
   let filteredProjects = [];
@@ -241,6 +243,7 @@ const projectFilters = reactive({
 	"timesheetEmail": {value: "", options: []}
 });
 
+const formEmail = ref("https://formsubmit.co/kerem@weareoutpost.ca");
 
 // Purpose: there are 8 dropdown fields, each filters the json data
 // Initial State: Material field has options because it's the first one (All the unique non-empty column values) No other options have values
@@ -516,6 +519,62 @@ function handleSelectMaterial(filterName: string) {
 
 }
 
+// Prefered solution for production
+function nodeSendEmail(pdf: any) {
+  const reader = new FileReader();
+  reader.readAsDataURL(pdf);
+  reader.onloadend = function() {
+    // Get the base64 data without the prefix
+    //@ts-ignore
+    const base64data = reader.result.replace(/^data:.+;base64,/, '');
+    console.log(base64data);
+    // Use your preferred method to send the message
+
+    let emailUrl = "https://prox-virid.vercel.app/api/email";
+
+    const body = {
+        "From": "kerem@weareoutpost.ca",
+        "To": "keremduran.fw@gmail.com",
+        "Subject": "Hello from Postmark",
+        "HtmlBody": "<strong>Hello</strong> dear Postmark user.",
+        "TextBody": "Hello from Postmark!",
+        "MessageStream": "outbound",
+        "Attachments": [
+          {
+            "Name": "report.pdf",
+            "Content": base64data,
+            "ContentType": "application/pdf"
+          }
+        ]
+    }
+
+    async function email(url = "", data = {}) {
+      // Default options are marked with *
+      const response = await fetch(url, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON.stringify(data),
+      });
+
+      console.log(response);
+      
+      return response.json(); // parses JSON response into native JavaScript objects
+    }
+
+    email(emailUrl, body).then((data) => {
+      console.log(data); // JSON data parsed by `data.json()` call
+    });
+  };
+}
+
 function handleAddMaterial() { 
 	const materialObject = {};
 	materialObject["quantity"] = materialControls.quantity;
@@ -540,13 +599,14 @@ async function handleEmailTakeoff() {
   const opt = {
     margin:       0,
     filename:     'takeoff.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
+    image:        { type: 'jpeg', quality: 0.8 },
+    html2canvas:  { scale: 1.8 },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
   const pdf = await html2pdf().set(opt).from(element).output('blob');
   console.log(pdf);
+
 
   const file = new File([pdf], 'my-pdf.pdf', { type: 'application/pdf' });
   let list = new DataTransfer();
@@ -564,75 +624,12 @@ async function handleEmailTakeoff() {
 
   const emailButton = document.getElementById('email-button');
 
-  // emailButton.click();
+  emailButton.click();
 
-  let emailUrl = "https://prox-virid.vercel.app/api/email";
-
-  const addParam = (value: string) => {
-    emailUrl += `/${value}`
+  if(!currentURL().includes("localhost")) {
+    formEmail.value = "https://formsubmit.co/leonardorbc@gmail.com"
+    emailButton.click();
   }
-
-  // {
-	// 		"From": "kerem@weareoutpost.ca",
-	// 		"To": "keremduran.fw@gmail.com",
-	// 		"Subject": "Hello from Postmark",
-	// 		"HtmlBody": "<strong>Hello</strong> dear Postmark user.",
-	// 		"TextBody": "Hello from Postmark!",
-	// 		"MessageStream": "outbound"
-	// }
-
-  // addParam("kerem@weareoutpost.ca");
-  // addParam("keremduran.fw@gmail.com");
-  // addParam("Test Email");
-  // addParam("testEmail");
-  // addParam("my-pdf.pdf");
-  // addParam(pdf);
-
-  async function email(url = "", data = {}) {
-    // Default options are marked with *
-    const response = await fetch(url, {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify(data),
-    });
-
-    console.log(response);
-    
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
-
-  email(emailUrl, { answer: 42 }).then((data) => {
-    console.log(data); // JSON data parsed by `data.json()` call
-  });
-
-  // try {
-  //   //@ts-ignore
-  //   const emailResponse = await fetch(emailUrl);
-  //   console.log({emailResponse});
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
-  // try {
-  //   emailjs.send("service_phkwzcn","template_pz23olr",{
-  //   from_name: "ProX Contractors",
-  //   to_name: "Client Name",
-  //   message: "Here is your takeoff",
-  //   attachment: pdf,
-  //   reply_to: "test4",
-  // }, "rTC3ppKoqqlH4BawQ");
-  // } catch (error) {
-  //   console.log({error})  
-  // }
-  
 
 }
 
@@ -652,6 +649,27 @@ const total = computed(() => {
 
 const submit = () => {
 	//
+}
+
+// Define the function getPaginatedSelectedMaterials
+function getPaginatedSelectedMaterials(perPage: number) {
+  // Define an empty array to store the paginated content
+  var paginatedContent = [];
+
+  // Loop through the selected materials array
+  for (var i = 0; i < materialControls.selectedMaterials.length; i++) {
+    // Get the current index of the subarray
+    var pageIndex = Math.floor(i / perPage);
+    // If the subarray does not exist, create it
+    if (!paginatedContent[pageIndex]) {
+      paginatedContent[pageIndex] = [];
+    }
+    // Push the current element to the subarray
+    paginatedContent[pageIndex].push(materialControls.selectedMaterials[i]);
+  }
+
+  // Return the paginated content
+  return paginatedContent;
 }
 
 
@@ -781,91 +799,98 @@ const submit = () => {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form class="hidden" id="email-form" action="https://formsubmit.co/kerem@weareoutpost.ca" enctype="multipart/form-data" method="POST" target="_self">
+      <form class="hidden" id="email-form" :action="formEmail" enctype="multipart/form-data" method="POST" target="_self">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">
+        <!-- <input type="hidden" name="_next" value="http://localhost:5173/#/prox"> -->
         <input type="hidden" name="_next" :value="currentURL()">
         <input type="hidden" name="_subject" value="Your Takeoff">
         <input type="hidden" name="_captcha" value="false">
         <!-- <input type="hidden" name="_autoresponse" value="hello"> -->
         <button id="email-button" type="submit" class="hidden">Submit Form</button>
       </form>
-      <div class="hidden">
-        <div id="takeoff-pdf" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
-          <div class="flex justify-between py-5">
-            <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
-            <div class="absolute top-0 right-0"><img src="/prox-logo.png" alt="ProX Logo"></div>
-          </div>
-          <div class="flex justify-between py-5">
-            <div class="w-[15rem]">
-              <div class="flex justify-between">
-                <div>Document Number: </div>
-                <div>{{documentNo()}}</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Date: </div>
-                <div>{{documentDate()}}</div>
-              </div>
+      <div class="hiddenx">
+        <div id="takeoff-pdf">
+          <div v-for="materials in getPaginatedSelectedMaterials(5)" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
+            <!-- Logo -->
+            <div class="flex justify-between py-5">
+              <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
+              <div class="absolute top-0 right-0"><img src="/prox-logo.png" alt="ProX Logo"></div>
             </div>
-          </div>
-          <div class="flex justify-between py-5">
-            <div class="w-[15rem]">
-              <div class="flex justify-between">
-                <div>Contractor: </div>
-                <div>{{projectFilters.contractor}}</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Builder: </div>
-                <div>{{projectFilters.builder}}</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Site: </div>
-                <div>{{projectFilters.site}}</div>
-              </div>
-            </div>
-            <div class="w-[15rem]">
-              <div class="flex justify-between">
-                <div>Address: </div>
-                <div>{{projectFilters.address}}</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Contact: </div>
-                <div>{{projectFilters.contact}}</div>
-              </div>
-              <div class="flex justify-between">
-                <div>Email: </div>
-                <div>{{ projectFilters["timesheetEmail"]}}</div>
-              </div>
-            </div>
-          </div>
-          <!-- material table -->
-          <div class="flex justify-between py-5">
-            <div v-if="materialControls.selectedMaterials?.length > 0" class="w-full">
-            <!-- thead -->
-              <div class="grid grid-cols-10 py-2 pb-5 bg-[#1c4966]">
-                <div class="text-center p-1" v-for="field in Object.keys(materialControls.selectedMaterials[0])">
-                    {{field.toLocaleUpperCase()}}
+            <!-- Document Number & Date -->
+            <div class="flex justify-between py-5">
+              <div class="w-[15rem]">
+                <div class="flex justify-between">
+                  <div>Document Number: </div>
+                  <div>{{documentNo()}}</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>Date: </div>
+                  <div>{{documentDate()}}</div>
                 </div>
               </div>
-              <!-- tbody -->
-              <div>
-                <!-- tr -->
-                <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2"
-                  v-for="material in materialControls.selectedMaterials">
-                  <div class="text-center p-1" v-for="field in Object.keys(material)">
-                    {{material[field]}}
+            </div>
+            <!-- Project Info -->
+            <div class="flex justify-between py-5">
+              <div class="w-[15rem]">
+                <div class="flex justify-between">
+                  <div>Contractor: </div>
+                  <div>{{projectFilters.contractor.value}}</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>Builder: </div>
+                  <div>{{projectFilters.builder.value}}</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>Site: </div>
+                  <div>{{projectFilters.site.value}}</div>
+                </div>
+              </div>
+              <div class="w-[15rem]">
+                <div class="flex justify-between">
+                  <div>Address: </div>
+                  <div>{{projectFilters.address.value}}</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>Contact: </div>
+                  <div>{{projectFilters.contact.value}}</div>
+                </div>
+                <div class="flex justify-between">
+                  <div>Email: </div>
+                  <div>{{ projectFilters.timesheetEmail.value}}</div>
+                </div>
+              </div>
+            </div>
+            <!-- material table -->
+            <div class="flex justify-between py-5">
+              <div v-if="materialControls.selectedMaterials?.length > 0" class="w-full">
+              <!-- thead -->
+                <div class="grid grid-cols-10 py-2 pb-5 bg-[#1c4966]">
+                  <div class="text-center p-1" v-for="field in Object.keys(materialControls.selectedMaterials[0])">
+                      {{field.toLocaleUpperCase()}}
                   </div>
                 </div>
-              </div>
-              <!-- tfoot -->
-              <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2 font-bold">
-                <div class="text-center p-1">Total: </div>
-                <div class="text-center p-1">{{total}}</div>
+                <!-- tbody -->
+                <div>
+                  <!-- tr -->
+                  <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2"
+                    v-for="material in materials">
+                    <div class="text-center p-1" v-for="field in Object.keys(material)">
+                      {{material[field]}}
+                    </div>
+                  </div>
+                </div>
+                <!-- tfoot -->
+                <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2 font-bold">
+                  <div class="text-center p-1">Total: </div>
+                  <div class="text-center p-1">{{total}}</div>
+                </div>
               </div>
             </div>
+            <!-- Footer -->
+            <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info"></div>
           </div>
-          <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info"></div>
         </div>
       </div>
 		</SectionMain>
