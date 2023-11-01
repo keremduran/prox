@@ -651,9 +651,9 @@ const submit = () => {
 	//
 }
 
-// Define the function getPaginatedSelectedMaterials
-function getPaginatedSelectedMaterials(perPage: number) {
+const paginatedSelectedMaterials = computed(() => {
   // Define an empty array to store the paginated content
+  const perPage = 10;
   var paginatedContent = [];
 
   // Loop through the selected materials array
@@ -670,7 +670,7 @@ function getPaginatedSelectedMaterials(perPage: number) {
 
   // Return the paginated content
   return paginatedContent;
-}
+});
 
 
 </script>
@@ -799,7 +799,7 @@ function getPaginatedSelectedMaterials(perPage: number) {
 				</BaseButtons>
 				<BaseDivider />
 			</CardBox>
-      <form class="hidden" id="email-form" :action="formEmail" enctype="multipart/form-data" method="POST" target="_self">
+      <form class="hidden" id="email-form" :action="formEmail" enctype="multipart/form-data" method="POST" target="_blank">
         <input class="hidden" type="email" name="email" :value="projectFilters['Timesheet Email']?.label" placeholder="Email Address">
         <input class="hidden" id="takeoff-pdf-input" type="file" name="attachment" accept="application/pdf">
         <input type="hidden" name="message" value="Your takeoff document.">
@@ -812,9 +812,9 @@ function getPaginatedSelectedMaterials(perPage: number) {
       </form>
       <div class="hiddenx">
         <div id="takeoff-pdf">
-          <div v-for="materials in getPaginatedSelectedMaterials(5)" class="p-8 text-white bg-[#1b2e3f] text-[10px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
+          <div v-for="(materials, currentPage) in paginatedSelectedMaterials" class="p-8 text-white bg-[#1b2e3f] text-[12px] w-[8.5in] min-w-[8.5in] h-[11in] relative">
             <!-- Logo -->
-            <div class="flex justify-between py-5">
+            <div class="flex justify-between py-4">
               <h1 class="text-[#31a3a4] text-5xl">TAKEOFF</h1>
               <div class="absolute top-0 right-0"><img src="/prox-logo.png" alt="ProX Logo"></div>
             </div>
@@ -863,7 +863,7 @@ function getPaginatedSelectedMaterials(perPage: number) {
               </div>
             </div>
             <!-- material table -->
-            <div class="flex justify-between py-5">
+            <div class="flex justify-between py-5 text-[10px]">
               <div v-if="materialControls.selectedMaterials?.length > 0" class="w-full">
               <!-- thead -->
                 <div class="grid grid-cols-10 py-2 pb-5 bg-[#1c4966]">
@@ -882,14 +882,23 @@ function getPaginatedSelectedMaterials(perPage: number) {
                   </div>
                 </div>
                 <!-- tfoot -->
-                <div class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2 font-bold">
+                <div v-if="currentPage === paginatedSelectedMaterials.length -1" class="grid grid-cols-10 py-1 pb-4 bg-white text-black border-2 font-bold">
                   <div class="text-center p-1">Total: </div>
                   <div class="text-center p-1">{{total}}</div>
                 </div>
               </div>
             </div>
             <!-- Footer -->
-            <div class="absolute bottom-0 left-0"><img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info"></div>
+            <div class="absolute bottom-0 left-0">
+              <div class="flex justify-between">
+                <img class="w-[80%]" src="/prox-footer.png" alt="ProX Contact Info">
+                <div class="bold p-5 flex flex-wrap justify-center items-center">
+                    <span>
+                      Page: {{ currentPage + 1 }} of {{ paginatedSelectedMaterials.length}}
+                    </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
