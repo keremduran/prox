@@ -594,6 +594,7 @@ function handleResetSelectedMaterials() {
 async function handleEmailTakeoff() {
   console.log("EMAILING TAKEOFF");
 
+  // Todo: migrate to puppeteer using url-to-pdf-api instead
   const element = document.getElementById('takeoff-pdf')
 
   const opt = {
@@ -773,7 +774,7 @@ const paginatedSelectedMaterials = computed(() => {
 						@click="handleAddMaterial" 
 						color="success" 
 						outline 
-						label="Add Material" 
+						label="Select Material" 
 					/>
 				</BaseButtons>
 				<BaseDivider />
